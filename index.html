@@ -1,0 +1,704 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBoS GEOAI | Hospital Accessibility Intelligence</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+:root{
+  --navy:#102b46;--blue:#1769aa;--teal:#008c82;
+  --bg:#f3f6fa;--border:#dce4ec;--muted:#637386;
+  --red:#d94848;--green:#21845b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:Arial,Helvetica,sans-serif;color:#203248;background:var(--bg)}
+body{overflow:hidden}
+header{height:62px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:12px}
+.brand{font-weight:800;font-size:18px;letter-spacing:.3px}
+.brand small{display:block;font-size:10px;color:#b8d1e5;letter-spacing:1.5px;margin-top:3px}
+.header-right{font-size:11px;text-align:right;color:#d6e4ef}
+main{height:calc(100% - 62px);display:grid;grid-template-columns:minmax(245px,1fr) minmax(300px,1fr) minmax(265px,1fr);gap:9px;padding:9px}
+.panel,.map-panel{min-width:0;min-height:0;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.panel{display:flex;flex-direction:column}
+.panel-title{padding:13px 14px;background:#fff;border-bottom:1px solid var(--border);font-weight:800;color:var(--navy);font-size:14px}
+.panel-content{padding:12px;overflow-y:auto;min-height:0;flex:1}
+.section{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#53667b;margin:5px 0 9px}
+label{display:block;font-size:12px;font-weight:700;margin:10px 0 5px;color:#34495e}
+input,select,button{font:inherit}
+input,select{width:100%;padding:9px;border:1px solid #cbd6e1;border-radius:6px;background:#fff;color:#23384d;font-size:12px}
+button{border:0;border-radius:6px;padding:10px 11px;cursor:pointer;font-size:12px;font-weight:700}
+button:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:white}
+.btn-teal{background:var(--teal);color:white}
+.btn-light{background:#eaf1f7;color:#28435c;border:1px solid #d8e3ed}
+.btn-red{background:#fff0f0;color:#a92f2f;border:1px solid #f0caca}
+.button-row{display:flex;gap:7px;margin-top:9px}
+.button-row>*{flex:1}
+.note{font-size:11px;line-height:1.5;color:var(--muted);margin:9px 0}
+.status{padding:9px 10px;border-radius:6px;background:#eef5fa;color:#31536e;font-size:11px;line-height:1.5;margin:10px 0;overflow-wrap:anywhere}
+.status.error{background:#fff0f0;color:#a92f2f}
+.status.success{background:#eaf8f0;color:#216b46}
+.checkline{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0}
+.checkline input{width:auto}
+.map-panel{display:flex;flex-direction:column;position:relative}
+.map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:8px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.map-toolbar select{width:auto;flex:1;min-width:110px}
+.map-toolbar button{padding:8px}
+#map{flex:1;min-height:0;width:100%;background:#e7edf1}
+.map-bottom{padding:8px 10px;border-top:1px solid var(--border);font-size:10px;color:#5b6e80;line-height:1.45}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{padding:11px;background:#f3f7fb;border:1px solid #e1eaf2;border-radius:8px;min-width:0}
+.kpi .value{font-size:23px;font-weight:800;color:var(--navy);overflow-wrap:anywhere}
+.kpi .label{font-size:10px;color:#64758a;line-height:1.4;margin-top:5px}
+.kpi.alert .value{color:var(--red)}
+.kpi.good .value{color:var(--green)}
+hr{border:0;border-top:1px solid #e5ebf1;margin:14px 0}
+.facility-list{display:flex;flex-direction:column;gap:7px}
+.facility-card{border:1px solid #dce5ee;border-radius:7px;padding:9px;cursor:pointer}
+.facility-card:hover{border-color:var(--blue);background:#f7fbff}
+.facility-card strong{display:block;font-size:12px;color:#203d58}
+.facility-card small{display:block;font-size:10px;color:#68798b;margin-top:4px;line-height:1.5}
+.tag{display:inline-block;background:#e8f2fb;color:#205780;border-radius:4px;padding:3px 5px;font-size:9px;margin-top:5px}
+.route-step{font-size:11px;padding:7px 0;border-bottom:1px solid #edf1f5;line-height:1.5}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:#53667b}
+.legend span{display:flex;gap:5px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid white;box-shadow:0 0 1px #333}
+footer{font-size:10px;color:#748396;line-height:1.5}
+.leaflet-popup-content{font-size:12px;line-height:1.55}
+@media(max-width:900px){
+ body{overflow:auto}
+ header{height:auto;min-height:60px;padding:10px 12px}
+ main{height:auto;min-height:calc(100% - 60px);grid-template-columns:1fr;padding:7px}
+ .panel{min-height:250px}
+ .map-panel{height:65vh;min-height:400px;grid-row:1}
+ .panel-content{max-height:500px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">🇬🇲 GBoS GEOAI <small>HOSPITAL ACCESSIBILITY INTELLIGENCE</small></div>
+  <div class="header-right">THE GAMBIA<br>Healthcare access screening</div>
+</header>
+
+<main>
+  <!-- LEFT: CONTROLS -->
+  <section class="panel">
+    <div class="panel-title">Access analysis & controls</div>
+    <div class="panel-content">
+      <div class="section">1 · Healthcare facilities</div>
+      <label for="facilityType">Facility type</label>
+      <select id="facilityType">
+        <option value="all">All mapped health facilities</option>
+        <option value="hospital">Hospitals</option>
+        <option value="clinic">Clinics / health centres</option>
+        <option value="doctors">Doctors / medical practices</option>
+        <option value="pharmacy">Pharmacies</option>
+      </select>
+      <label for="searchName">Search facility or community</label>
+      <input id="searchName" placeholder="e.g. Banjul, hospital name">
+      <div class="button-row">
+        <button class="btn-primary" id="loadFacilities">Load facilities</button>
+        <button class="btn-light" id="locateMe">My location</button>
+      </div>
+      <div id="loadStatus" class="status">Ready. Load mapped facilities to begin. Internet access is required.</div>
+
+      <hr>
+      <div class="section">2 · Set your starting location</div>
+      <label for="originName">Starting community / place</label>
+      <input id="originName" placeholder="e.g. Brikama, Basse, Banjul">
+      <div class="button-row">
+        <button class="btn-teal" id="findPlace">Find place</button>
+        <button class="btn-light" id="mapOrigin">Click map to set origin</button>
+      </div>
+      <p class="note">You can also click anywhere on the map to set a starting point. Place search uses OpenStreetMap geocoding.</p>
+      <div id="originStatus" class="status">Starting location not set.</div>
+
+      <hr>
+      <div class="section">3 · Calculate accessibility</div>
+      <label for="travelMode">Road travel mode</label>
+      <select id="travelMode">
+        <option value="driving">Car / road route</option>
+      </select>
+      <label for="speed">Estimated average travel speed</label>
+      <select id="speed">
+        <option value="20">20 km/h — slow / local roads</option>
+        <option value="30" selected>30 km/h — illustrative average</option>
+        <option value="40">40 km/h — faster roads</option>
+        <option value="50">50 km/h — high-speed assumption</option>
+      </select>
+      <label for="radius">Straight-line access screening distance</label>
+      <select id="radius">
+        <option value="5">5 km</option>
+        <option value="10" selected>10 km</option>
+        <option value="15">15 km</option>
+        <option value="25">25 km</option>
+        <option value="50">50 km</option>
+      </select>
+      <div class="button-row">
+        <button class="btn-primary" id="analyse">Analyse nearest facility</button>
+        <button class="btn-light" id="clear">Reset</button>
+      </div>
+      <p class="note">Travel time is estimated from a road-routing service when available. The average-speed selector is a fallback only and does not model traffic, waiting, road closures or ambulance response.</p>
+
+      <hr>
+      <div class="section">Map layers</div>
+      <label class="checkline"><input type="checkbox" id="showRings" checked> Show distance screening circles</label>
+      <label class="checkline"><input type="checkbox" id="showRoutes" checked> Show calculated route</label>
+      <label class="checkline"><input type="checkbox" id="showFacilities" checked> Show facility markers</label>
+      <label class="checkline"><input type="checkbox" id="showOrigin" checked> Show starting location</label>
+      <div class="button-row">
+        <button class="btn-light" id="fitAll">Fit map to results</button>
+        <button class="btn-light" id="exportCSV">Export facilities CSV</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CENTER: MAP -->
+  <section class="map-panel">
+    <div class="map-toolbar">
+      <select id="basemap" aria-label="Basemap">
+        <option value="street">Street map</option>
+        <option value="satellite">Satellite imagery</option>
+        <option value="terrain">Terrain</option>
+        <option value="dark">Dark map</option>
+      </select>
+      <button id="gambiaView" class="btn-light">🇬🇲 The Gambia</button>
+    </div>
+    <div id="map"></div>
+    <div class="map-bottom">
+      <div class="legend">
+        <span><i class="dot" style="background:#c43e4c"></i> Hospital</span>
+        <span><i class="dot" style="background:#178a82"></i> Clinic / health centre</span>
+        <span><i class="dot" style="background:#276bc0"></i> Other health facility</span>
+        <span><i class="dot" style="background:#e89a27"></i> Starting point</span>
+        <span><i class="dot" style="background:#7e57c2"></i> Route</span>
+      </div>
+      <div style="margin-top:5px">Distance circles represent straight-line distance, not actual travel catchments.</div>
+    </div>
+  </section>
+
+  <!-- RIGHT: ANALYTICS -->
+  <section class="panel">
+    <div class="panel-title">Healthcare access intelligence</div>
+    <div class="panel-content">
+      <div class="section">National mapped inventory</div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="value" id="kFacilities">—</div><div class="label">Mapped facilities loaded</div></div>
+        <div class="kpi"><div class="value" id="kHospitals">—</div><div class="label">Hospital-tagged facilities</div></div>
+        <div class="kpi"><div class="value" id="kNearest">—</div><div class="label">Nearest facility, straight-line km</div></div>
+        <div class="kpi"><div class="value" id="kTime">—</div><div class="label">Estimated road travel time</div></div>
+      </div>
+
+      <hr>
+      <div class="section">Nearest facility result</div>
+      <div id="nearestResult" class="status">Set a starting point, load facilities and run the analysis.</div>
+      <div class="button-row">
+        <button id="routeNearest" class="btn-primary" disabled>Route to nearest</button>
+        <button id="routeSelected" class="btn-light" disabled>Route to selected</button>
+      </div>
+
+      <hr>
+      <div class="section">Facilities near your origin</div>
+      <label for="listLimit">Number of results</label>
+      <select id="listLimit">
+        <option value="5">Top 5</option>
+        <option value="10" selected>Top 10</option>
+        <option value="20">Top 20</option>
+        <option value="50">Top 50</option>
+      </select>
+      <div id="facilityList" class="facility-list">
+        <p class="note">Facility results will appear here after loading data.</p>
+      </div>
+
+      <hr>
+      <div class="section">Route directions</div>
+      <div id="routeSummary" class="status">No route calculated yet.</div>
+      <div id="directions"><p class="note">Select a starting point and calculate a route.</p></div>
+
+      <hr>
+      <div class="section">How to interpret results</div>
+      <p class="note"><b>Proximity:</b> the nearest facility is selected by straight-line distance, which may not be the facility with the shortest road journey.</p>
+      <p class="note"><b>Access screening:</b> facilities within the selected radius are counted by geographic distance. This is not a population coverage estimate.</p>
+      <p class="note"><b>Data quality:</b> OpenStreetMap may omit facilities, contain outdated records, or lack information on service capability. No facility should be assumed open or able to handle an emergency.</p>
+      <footer>GBoS GEOAI · Research and educational use<br>Produced by Ansu Singhateh · GIS / Cartography Unit, GBoS</footer>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+/* ==========================================================
+   GBoS GEOAI — HOSPITAL ACCESSIBILITY INTELLIGENCE
+   Data: OpenStreetMap / Overpass API
+   Geocoding: Nominatim
+   Road routing: OSRM demo service
+   This is a screening prototype, not an emergency service.
+   ========================================================== */
+
+const $ = id => document.getElementById(id);
+const GAMBIA_BOUNDS = [[13.85,-16.95],[8.0,-13.7]];
+const GAMBIA_CENTER = [13.45,-15.55];
+
+const map = L.map("map",{zoomControl:true}).setView(GAMBIA_CENTER,7);
+
+const basemaps = {
+  street:L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }),
+  satellite:L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
+    maxZoom:19,attribution:"Tiles © Esri"
+  }),
+  terrain:L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",{
+    maxZoom:17,attribution:"© OpenTopoMap contributors"
+  }),
+  dark:L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{
+    maxZoom:19,attribution:"© OpenStreetMap © CARTO"
+  })
+};
+basemaps.street.addTo(map);
+
+const facilityLayer = L.layerGroup().addTo(map);
+const routeLayer = L.layerGroup().addTo(map);
+const ringLayer = L.layerGroup().addTo(map);
+const originLayer = L.layerGroup().addTo(map);
+
+let facilities = [];
+let origin = null;
+let selectedFacility = null;
+let nearestFacility = null;
+let routeLine = null;
+let routeRequestId = 0;
+let clickToSetOrigin = false;
+let facilityMarkers = [];
+let originMarker = null;
+let routeDestination = null;
+
+function setStatus(id,message,type=""){
+  const el=$(id);
+  el.textContent=message;
+  el.className="status"+(type?" "+type:"");
+}
+function esc(value){
+  return String(value??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function num(value,digits=1){
+  if(!Number.isFinite(value)) return "—";
+  return value.toLocaleString(undefined,{maximumFractionDigits:digits,minimumFractionDigits:digits});
+}
+function haversine(a,b){
+  const R=6371,rad=Math.PI/180;
+  const dLat=(b.lat-a.lat)*rad,dLon=(b.lon-a.lon)*rad;
+  const x=Math.sin(dLat/2)**2+
+    Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
+}
+function facilityType(tags={}){
+  const a=tags.amenity||"";
+  if(a==="hospital"||tags.healthcare==="hospital") return "hospital";
+  if(a==="clinic"||tags.healthcare==="clinic"||tags.healthcare==="centre"||tags.healthcare==="health_centre") return "clinic";
+  if(a==="doctors"||tags.healthcare==="doctor") return "doctors";
+  if(a==="pharmacy") return "pharmacy";
+  return "other";
+}
+function typeLabel(f){
+  return ({hospital:"Hospital",clinic:"Clinic / health centre",doctors:"Doctor / medical practice",pharmacy:"Pharmacy",other:"Health facility"})[f.type]||"Health facility";
+}
+function typeColor(type){
+  return ({hospital:"#c43e4c",clinic:"#178a82",doctors:"#276bc0",pharmacy:"#8056b5",other:"#276bc0"})[type]||"#276bc0";
+}
+function iconFor(type){
+  const emoji={hospital:"✚",clinic:"✚",doctors:"⚕",pharmacy:"＋",other:"+"}[type]||"+";
+  return L.divIcon({
+    className:"",
+    html:`<div style="width:25px;height:25px;border-radius:50%;background:${typeColor(type)};border:2px solid white;box-shadow:0 1px 5px #0005;color:white;font-weight:900;text-align:center;line-height:21px;font-size:15px">${emoji}</div>`,
+    iconSize:[25,25],iconAnchor:[12,12]
+  });
+}
+function getName(tags, fallback){
+  return tags.name||tags["name:en"]||tags.operator||tags.brand||fallback;
+}
+function facilityPopup(f){
+  return `<b>${esc(f.name)}</b><br>${esc(typeLabel(f))}<br>
+  ${f.tags.operator?`Operator: ${esc(f.tags.operator)}<br>`:""}
+  ${f.tags["addr:city"]?`Town: ${esc(f.tags["addr:city"])}<br>`:""}
+  ${f.tags.phone?`Phone: ${esc(f.tags.phone)}<br>`:""}
+  ${f.distance!==undefined?`Straight-line distance: ${num(f.distance)} km<br>`:""}
+  <small>OpenStreetMap record; verify details independently.</small>`;
+}
+
+function renderFacilities(){
+  facilityLayer.clearLayers();
+  facilityMarkers=[];
+  const chosen=$("facilityType").value;
+  const show=$("showFacilities").checked;
+  const query=$("searchName").value.trim().toLowerCase();
+
+  const shown=facilities.filter(f=>{
+    const typeOk=chosen==="all" || f.type===chosen;
+    const textOk=!query || `${f.name} ${f.tags["addr:city"]||""} ${f.tags.operator||""}`.toLowerCase().includes(query);
+    return typeOk&&textOk;
+  });
+
+  if(show){
+    shown.forEach(f=>{
+      const marker=L.marker([f.lat,f.lon],{icon:iconFor(f.type)});
+      marker.bindPopup(facilityPopup(f));
+      marker.on("click",()=>{selectedFacility=f;renderFacilityList();});
+      marker.addTo(facilityLayer);
+      facilityMarkers.push(marker);
+    });
+  }
+  $("kFacilities").textContent=facilities.length.toLocaleString();
+  $("kHospitals").textContent=facilities.filter(f=>f.type==="hospital").length.toLocaleString();
+  renderFacilityList();
+}
+
+async function loadFacilities(){
+  $("loadFacilities").disabled=true;
+  setStatus("loadStatus","Querying OpenStreetMap for mapped healthcare facilities in The Gambia…");
+  try{
+    // Bounding box covers The Gambia and nearby mapped features.
+    // Returned features are filtered against approximate country bounds.
+    const query=`[out:json][timeout:60];
+(
+ node["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](8.0,-16.95,13.85,-13.7);
+ way["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](8.0,-16.95,13.85,-13.7);
+ relation["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](8.0,-16.95,13.85,-13.7);
+ node["healthcare"~"^(hospital|clinic|centre|health_centre|doctor)$"](8.0,-16.95,13.85,-13.7);
+ way["healthcare"~"^(hospital|clinic|centre|health_centre|doctor)$"](8.0,-16.95,13.85,-13.7);
+);
+out center tags;`;
+    const endpoints=[
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter"
+    ];
+    let data=null,lastError=null;
+    for(const endpoint of endpoints){
+      try{
+        const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"data="+encodeURIComponent(query)});
+        if(!response.ok) throw new Error("Server returned HTTP "+response.status);
+        data=await response.json();
+        break;
+      }catch(e){lastError=e;}
+    }
+    if(!data) throw lastError||new Error("No response from the map data service.");
+
+    const unique=new Map();
+    for(const el of (data.elements||[])){
+      const tags=el.tags||{};
+      const lat=el.lat??el.center?.lat;
+      const lon=el.lon??el.center?.lon;
+      if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
+      if(lat<8||lat>13.85||lon< -16.95||lon> -13.7)continue;
+      const type=facilityType(tags);
+      if(!["hospital","clinic","doctors","pharmacy"].includes(type))continue;
+      const key=`${type}:${(tags.name||"").toLowerCase()}:${lat.toFixed(4)}:${lon.toFixed(4)}`;
+      if(unique.has(key))continue;
+      unique.set(key,{
+        id:`${el.type}/${el.id}`,name:getName(tags,`${typeLabel({type})} ${el.id}`),
+        lat,lon,type,tags
+      });
+    }
+    facilities=[...unique.values()].sort((a,b)=>a.name.localeCompare(b.name));
+    if(!facilities.length) throw new Error("No matching records returned. Try again later.");
+    renderFacilities();
+    updateAccessAnalysis();
+    setStatus("loadStatus",`Loaded ${facilities.length} mapped records from OpenStreetMap. Facility completeness is not guaranteed.`,"success");
+  }catch(e){
+    setStatus("loadStatus","Could not load healthcare data: "+(e.message||e)+". Check internet access or try again later.","error");
+  }finally{
+    $("loadFacilities").disabled=false;
+  }
+}
+
+function updateOriginMarker(){
+  originLayer.clearLayers();
+  originMarker=null;
+  if(origin && $("showOrigin").checked){
+    originMarker=L.marker([origin.lat,origin.lon],{
+      icon:L.divIcon({className:"",html:'<div style="width:28px;height:28px;border-radius:50%;background:#e89a27;border:3px solid white;box-shadow:0 1px 5px #0006;text-align:center;line-height:22px;font-size:15px">●</div>',iconSize:[28,28],iconAnchor:[14,14]})
+    }).addTo(originLayer);
+    originMarker.bindPopup(`<b>Starting location</b><br>${esc(origin.name||"Selected point")}<br>${num(origin.lat,5)}, ${num(origin.lon,5)}`);
+  }
+  $("originStatus").textContent=origin
+    ? `${origin.name||"Selected point"} · ${num(origin.lat,5)}, ${num(origin.lon,5)}`
+    : "Starting location not set.";
+  $("analyse").disabled=!origin||!facilities.length;
+  $("routeNearest").disabled=!origin||!nearestFacility;
+  $("routeSelected").disabled=!origin||!selectedFacility;
+}
+function setOrigin(lat,lon,name="Selected point"){
+  origin={lat:Number(lat),lon:Number(lon),name};
+  selectedFacility=null;
+  routeLayer.clearLayers();
+  routeLine=null;
+  $("routeSummary").textContent="Origin changed. Calculate a new route.";
+  $("directions").innerHTML='<p class="note">Calculate a route to display directions.</p>';
+  updateOriginMarker();
+  updateAccessAnalysis();
+}
+map.on("click",e=>{
+  if(!clickToSetOrigin)return;
+  clickToSetOrigin=false;
+  $("mapOrigin").textContent="Click map to set origin";
+  setOrigin(e.latlng.lat,e.latlng.lng,"Map-selected location");
+});
+
+$("mapOrigin").addEventListener("click",()=>{
+  clickToSetOrigin=!clickToSetOrigin;
+  $("mapOrigin").textContent=clickToSetOrigin?"Click the map now…":"Click map to set origin";
+  setStatus("originStatus",clickToSetOrigin?"Click the map to choose the starting location.":"Map selection cancelled.");
+});
+
+async function findPlace(){
+  const q=$("originName").value.trim();
+  if(!q){setStatus("originStatus","Enter a community or place name first.","error");return;}
+  setStatus("originStatus","Searching for "+q+"…");
+  try{
+    const url="https://nominatim.openstreetmap.org/search?format=jsonv2&country=The%20Gambia&limit=5&q="+encodeURIComponent(q+", The Gambia");
+    const r=await fetch(url,{headers:{"Accept":"application/json"}});
+    if(!r.ok)throw new Error("Geocoding service returned HTTP "+r.status);
+    const data=await r.json();
+    if(!data.length)throw new Error("No matching place found. Try a different spelling or click the map.");
+    const result=data[0];
+    setOrigin(Number(result.lat),Number(result.lon),result.display_name.split(",").slice(0,2).join(","));
+    map.setView([origin.lat,origin.lon],13);
+  }catch(e){
+    setStatus("originStatus","Place search failed: "+(e.message||e),"error");
+  }
+}
+$("findPlace").addEventListener("click",findPlace);
+$("originName").addEventListener("keydown",e=>{if(e.key==="Enter")findPlace();});
+
+$("locateMe").addEventListener("click",()=>{
+  if(!navigator.geolocation){setStatus("originStatus","Geolocation is not supported by this browser.","error");return;}
+  setStatus("originStatus","Requesting your device location…");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    setOrigin(pos.coords.latitude,pos.coords.longitude,"Current device location");
+    map.setView([origin.lat,origin.lon],14);
+  },err=>setStatus("originStatus","Location unavailable or permission denied. You can search for a place or click the map.","error"),{enableHighAccuracy:true,timeout:12000});
+});
+
+function updateAccessAnalysis(){
+  if(!origin){
+    $("kNearest").textContent="—";
+    $("kTime").textContent="—";
+    $("nearestResult").textContent="Set a starting location to calculate access.";
+    $("routeNearest").disabled=true;
+    return;
+  }
+  facilities.forEach(f=>f.distance=haversine(origin,{lat:f.lat,lon:f.lon}));
+  const eligible=facilities.filter(f=>$("facilityType").value==="all"||f.type===$("facilityType").value).sort((a,b)=>a.distance-b.distance);
+  nearestFacility=eligible[0]||null;
+  const radius=Number($("radius").value);
+  const within=eligible.filter(f=>f.distance<=radius).length;
+
+  if(nearestFacility){
+    $("kNearest").textContent=num(nearestFacility.distance);
+    const assumedSpeed=Number($("speed").value);
+    $("kTime").textContent="~"+Math.round(nearestFacility.distance/assumedSpeed*60)+" min*";
+    $("nearestResult").innerHTML=
+      `<b>${esc(nearestFacility.name)}</b><br>${esc(typeLabel(nearestFacility))}<br>`+
+      `Straight-line distance: <b>${num(nearestFacility.distance)} km</b><br>`+
+      `Facilities within ${radius} km: <b>${within}</b><br>`+
+      `<span style="font-size:10px">*Fallback time based on straight-line distance and assumed speed. Calculate a route for a road-network estimate.</span>`;
+  }else{
+    $("kNearest").textContent="—";$("kTime").textContent="—";
+    $("nearestResult").textContent="No facility matches the selected type.";
+  }
+  renderFacilityList();
+  updateOriginMarker();
+}
+
+function renderFacilityList(){
+  const limit=Number($("listLimit").value);
+  const chosen=$("facilityType").value;
+  let list=facilities.filter(f=>chosen==="all"||f.type===chosen);
+  if(origin)list.forEach(f=>f.distance=haversine(origin,{lat:f.lat,lon:f.lon}));
+  if(origin)list.sort((a,b)=>a.distance-b.distance);
+  const query=$("searchName").value.trim().toLowerCase();
+  if(query)list=list.filter(f=>`${f.name} ${f.tags["addr:city"]||""} ${f.tags.operator||""}`.toLowerCase().includes(query));
+  list=list.slice(0,limit);
+
+  $("facilityList").innerHTML=list.length?list.map(f=>`
+    <div class="facility-card" data-id="${esc(f.id)}" tabindex="0" role="button">
+      <strong>${esc(f.name)}</strong>
+      <small>${esc(typeLabel(f))}${f.distance!==undefined?" · "+num(f.distance)+" km straight-line":""}</small>
+      ${f.tags.operator?`<small>Operator: ${esc(f.tags.operator)}</small>`:""}
+      <span class="tag">${f.distance!==undefined?"NEARBY RESULT":"MAPPED FACILITY"}</span>
+    </div>`).join(""):'<p class="note">No facilities match this filter.</p>';
+
+  $("facilityList").querySelectorAll(".facility-card").forEach(card=>{
+    const action=()=>{
+      const f=facilities.find(x=>x.id===card.dataset.id);
+      if(!f)return;
+      selectedFacility=f;
+      map.setView([f.lat,f.lon],14);
+      const marker=facilityMarkers.find(m=>m.getLatLng().lat===f.lat&&m.getLatLng().lng===f.lon);
+      if(marker)marker.openPopup();
+      $("routeSelected").disabled=!origin;
+    };
+    card.addEventListener("click",action);
+    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();action();}});
+  });
+  $("routeNearest").disabled=!origin||!nearestFacility;
+  $("routeSelected").disabled=!origin||!selectedFacility;
+}
+
+async function calculateRoute(destination){
+  if(!origin||!destination){setStatus("routeSummary","Choose a starting point and destination.","error");return;}
+  const id=++routeRequestId;
+  routeDestination=destination;
+  setStatus("routeSummary","Calculating road route…");
+  $("directions").innerHTML='<p class="note">Requesting road-network route…</p>';
+  try{
+    const url=`https://router.project-osrm.org/route/v1/driving/${origin.lon},${origin.lat};${destination.lon},${destination.lat}?overview=full&geometries=geojson&steps=true`;
+    const response=await fetch(url);
+    if(!response.ok)throw new Error("Routing service returned HTTP "+response.status);
+    const data=await response.json();
+    if(id!==routeRequestId)return;
+    if(data.code!=="Ok"||!data.routes?.length)throw new Error("No drivable route found between these points.");
+    const route=data.routes[0];
+    const coords=route.geometry.coordinates.map(c=>[c[1],c[0]]);
+    routeLayer.clearLayers();
+    routeLine=L.polyline(coords,{color:"#7e57c2",weight:5,opacity:.9}).addTo(routeLayer);
+    const km=route.distance/1000;
+    const minutes=route.duration/60;
+    $("routeSummary").innerHTML=`<b>Road route calculated</b><br>Road distance: <b>${num(km)} km</b><br>Routing estimate: <b>${formatDuration(minutes)}</b><br><small>OSRM route estimate; live traffic is not included.</small>`;
+    $("kTime").textContent=formatDuration(minutes);
+    if($("showRoutes").checked)routeLine.addTo(routeLayer);
+    map.fitBounds(routeLine.getBounds(),{padding:[35,35],maxZoom:13});
+    renderDirections(route.legs?.[0]?.steps||[]);
+  }catch(e){
+    if(id!==routeRequestId)return;
+    const speed=Number($("speed").value);
+    const straight=haversine(origin,destination);
+    const min=straight/speed*60;
+    setStatus("routeSummary","Road routing unavailable: "+(e.message||e)+". A rough fallback is shown below.","error");
+    $("routeSummary").innerHTML+=`<br>Fallback straight-line distance: ${num(straight)} km<br>Assumed-speed estimate: ${formatDuration(min)}<br><small>This is not a road route.</small>`;
+    $("kTime").textContent="~"+formatDuration(min);
+    $("directions").innerHTML='<p class="note">Turn-by-turn directions are unavailable because no road route was returned. Try again later.</p>';
+  }
+}
+function formatDuration(minutes){
+  if(!Number.isFinite(minutes))return "—";
+  const m=Math.round(minutes);
+  if(m<60)return `${m} min`;
+  return `${Math.floor(m/60)} h ${m%60} min`;
+}
+function renderDirections(steps){
+  if(!steps.length){
+    $("directions").innerHTML='<p class="note">The routing service did not return step-by-step directions.</p>';
+    return;
+  }
+  const top=steps.slice(0,80);
+  $("directions").innerHTML=top.map((s,i)=>{
+    const name=s.name?` — ${esc(s.name)}`:"";
+    const distance=s.distance>=1000?num(s.distance/1000)+" km":Math.round(s.distance)+" m";
+    return `<div class="route-step"><b>${i+1}.</b> ${esc(s.maneuver?.type||"Continue")} ${esc(s.maneuver?.modifier||"")}${name}<br><small>${distance}</small></div>`;
+  }).join("")+(steps.length>80?'<p class="note">Showing the first 80 directions.</p>':"");
+}
+$("routeNearest").addEventListener("click",()=>nearestFacility&&calculateRoute(nearestFacility));
+$("routeSelected").addEventListener("click",()=>selectedFacility&&calculateRoute(selectedFacility));
+$("analyse").addEventListener("click",()=>{
+  updateAccessAnalysis();
+  if(nearestFacility)calculateRoute(nearestFacility);
+});
+$("facilityType").addEventListener("change",()=>{
+  renderFacilities();
+  updateAccessAnalysis();
+});
+$("searchName").addEventListener("input",renderFacilities);
+$("listLimit").addEventListener("change",renderFacilityList);
+$("radius").addEventListener("change",updateAccessAnalysis);
+$("speed").addEventListener("change",updateAccessAnalysis);
+
+$("showFacilities").addEventListener("change",renderFacilities);
+$("showOrigin").addEventListener("change",updateOriginMarker);
+$("showRoutes").addEventListener("change",()=>{
+  if(routeLine){
+    if($("showRoutes").checked)routeLine.addTo(routeLayer);
+    else routeLayer.removeLayer(routeLine);
+  }
+});
+$("showRings").addEventListener("change",drawRings);
+
+function drawRings(){
+  ringLayer.clearLayers();
+  if(!origin||!$("showRings").checked)return;
+  const km=Number($("radius").value);
+  // Leaflet circles are a distance illustration only, not road-access isochrones.
+  [km].forEach((r,i)=>{
+    L.circle([origin.lat,origin.lon],{
+      radius:r*1000,color:"#2784bf",weight:2,fillColor:"#6bb6e7",
+      fillOpacity:.08,dashArray:"6 5"
+    }).bindPopup(`${r} km straight-line screening radius`).addTo(ringLayer);
+  });
+}
+const oldSetOrigin=setOrigin;
+setOrigin=function(lat,lon,name){
+  oldSetOrigin(lat,lon,name);
+  drawRings();
+};
+
+$("basemap").addEventListener("change",()=>{
+  Object.values(basemaps).forEach(layer=>map.removeLayer(layer));
+  basemaps[$("basemap").value].addTo(map);
+});
+$("gambiaView").addEventListener("click",()=>map.fitBounds(GAMBIA_BOUNDS,{padding:[15,15]}));
+$("fitAll").addEventListener("click",()=>{
+  const points=[];
+  if(origin)points.push([origin.lat,origin.lon]);
+  if(routeLine)points.push(...routeLine.getLatLngs().map(p=>[p.lat,p.lng]));
+  if(points.length)map.fitBounds(points,{padding:[30,30],maxZoom:13});
+  else if(facilityMarkers.length)map.fitBounds(L.featureGroup(facilityMarkers).getBounds(),{padding:[25,25]});
+  else map.fitBounds(GAMBIA_BOUNDS);
+});
+
+$("clear").addEventListener("click",()=>{
+  routeRequestId++;
+  origin=null;selectedFacility=null;nearestFacility=null;routeDestination=null;
+  routeLayer.clearLayers();ringLayer.clearLayers();originLayer.clearLayers();
+  routeLine=null;originMarker=null;
+  $("originName").value="";
+  $("routeSummary").textContent="No route calculated yet.";
+  $("directions").innerHTML='<p class="note">Select a starting point and calculate a route.</p>';
+  $("nearestResult").textContent="Set a starting point, load facilities and run the analysis.";
+  $("kNearest").textContent="—";$("kTime").textContent="—";
+  updateOriginMarker();updateAccessAnalysis();
+  map.fitBounds(GAMBIA_BOUNDS,{padding:[15,15]});
+});
+
+$("exportCSV").addEventListener("click",()=>{
+  if(!facilities.length){setStatus("loadStatus","Load facilities before exporting.","error");return;}
+  const headers=["id","name","type","latitude","longitude","straight_line_distance_km","operator","phone","website","osm_url"];
+  const rows=facilities.map(f=>[
+    f.id,f.name,f.type,f.lat,f.lon,
+    origin?haversine(origin,{lat:f.lat,lon:f.lon}).toFixed(3):"",
+    f.tags.operator||"",f.tags.phone||"",f.tags.website||"",
+    `https://www.openstreetmap.org/${f.id.replace("/","/")}`
+  ]);
+  const csv=[headers,...rows].map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="GBoS_GEOAI_Gambia_Healthcare_Facilities.csv";
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
+
+// Start with Gambia view; data are fetched only when the user asks.
+map.fitBounds(GAMBIA_BOUNDS,{padding:[15,15]});
+setStatus("loadStatus","Ready. Click “Load facilities” to retrieve mapped health facilities.");
+</script>
+</body>
+</html>
