@@ -13,49 +13,88 @@
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
 <style>
-:root{--blue:#123c69;--blue2:#1769aa;--bg:#f2f6fb;--line:#d6dfeb;--text:#1c2938;--muted:#627187;--green:#16845b;--red:#c83b42}
+:root {
+  --navy:#123c69;
+  --blue:#1769aa;
+  --background:#f2f6fb;
+  --border:#d6dfeb;
+  --text:#1c2938;
+  --muted:#627187;
+  --green:#16845b;
+  --red:#c83b42;
+}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--text)}
-body{background:var(--bg);overflow:hidden}
-header{height:76px;padding:10px 18px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{font-size:19px;font-weight:800}
-.subtitle{font-size:12px;margin-top:5px;opacity:.9}
+body{background:var(--background);overflow:hidden}
+header{
+  min-height:76px;padding:10px 18px;background:var(--navy);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.brand{font-size:20px;font-weight:800}
+.subtitle{font-size:12px;margin-top:5px;opacity:.92}
 .header-right{text-align:right;font-size:12px;line-height:1.5}
-main{height:calc(100vh - 116px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:10px}
-.panel{background:white;border:1px solid var(--line);border-radius:10px;min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden}
-.panel-heading{position:sticky;top:0;z-index:500;background:#fff;border-bottom:1px solid var(--line);padding:13px 14px;font-size:15px;font-weight:800}
+main{
+  height:calc(100vh - 116px);display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:10px
+}
+.panel{
+  background:white;border:1px solid var(--border);border-radius:10px;
+  min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden
+}
+.panel-heading{
+  position:sticky;top:0;z-index:500;background:white;
+  border-bottom:1px solid var(--border);padding:13px 14px;font-size:15px;font-weight:800
+}
 .section{padding:12px 14px;border-bottom:1px solid #e8edf4}
-h3{font-size:13px;margin:0 0 10px;color:var(--blue)}
+h3{font-size:13px;margin:0 0 10px;color:var(--navy)}
 label{display:block;font-size:12px;font-weight:700;margin:10px 0 5px}
-select,input,button{width:100%;min-height:36px;border:1px solid #cbd5e1;border-radius:6px;padding:8px;background:#fff;color:var(--text);font-size:12px}
-button{background:var(--blue2);color:#fff;font-weight:700;border:0;cursor:pointer}
-button:hover{filter:brightness(.93)}
-button.secondary{background:#e7eef7;color:var(--blue);border:1px solid #cbd5e1}
-button:disabled{opacity:.5;cursor:not-allowed}
+select,input,button{
+  width:100%;min-height:38px;border:1px solid #cbd5e1;border-radius:6px;
+  padding:8px;background:#fff;color:var(--text);font-size:12px
+}
+button{background:var(--blue);color:#fff;font-weight:700;border:0;cursor:pointer}
+button:hover{filter:brightness(.94)}
+button.secondary{background:#e7eef7;color:var(--navy);border:1px solid #cbd5e1}
+button:disabled{opacity:.55;cursor:not-allowed}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .note{font-size:11px;color:var(--muted);line-height:1.55}
 .status{padding:10px;border-radius:7px;background:#edf4fc;border:1px solid #d4e4f7;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 .status.error{background:#fff0f0;border-color:#f0c5c5;color:#8d2020}
 .status.success{background:#eaf8f0;border-color:#bfe5ce;color:#14633e}
-#map{height:calc(100% - 158px);min-height:280px;width:100%}
+#map{height:calc(100% - 165px);min-height:280px;width:100%}
 .map-tools{padding:9px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.legend{padding:8px 12px 12px;font-size:11px;line-height:1.7;border-top:1px solid var(--line)}
+.legend{padding:8px 12px 12px;font-size:11px;line-height:1.7;border-top:1px solid var(--border)}
 .legend-item{display:flex;align-items:center;gap:7px}
 .swatch{width:13px;height:13px;border:1px solid #6b7280;display:inline-block;flex-shrink:0}
-.legend-line{display:inline-block;width:18px;height:4px;background:#1769aa}
+.legend-line{display:inline-block;width:18px;height:4px;background:var(--blue)}
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.kpi{border:1px solid var(--line);border-radius:8px;padding:10px;background:#f8fafc;min-width:0}
+.kpi{border:1px solid var(--border);border-radius:8px;padding:10px;background:#f8fafc;min-width:0}
 .kpi-label{font-size:11px;color:var(--muted)}
 .kpi-value{font-size:21px;font-weight:800;margin-top:5px;overflow-wrap:anywhere}
 .kpi-sub{font-size:10px;color:var(--muted);margin-top:4px}
 .chart-wrap{height:220px;position:relative;margin-top:8px}
-footer{height:40px;background:white;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 12px;color:#536276;font-size:11px}
+footer{
+  min-height:40px;background:white;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:6px 12px;color:#536276;font-size:11px
+}
 input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
-@media(max-width:950px){body{overflow:auto}header{height:auto;min-height:76px}main{height:auto;display:flex;flex-direction:column}.panel{min-height:420px}#map{height:480px}footer{height:auto;min-height:40px}}
+.file-button{display:block;text-align:center;padding:11px;background:#e7eef7;color:var(--navy);
+  border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700}
+.file-button:hover{background:#dce8f6}
+#eaFile{display:none}
+@media(max-width:950px){
+  body{overflow:auto}
+  header{height:auto;min-height:76px}
+  main{height:auto;display:flex;flex-direction:column}
+  .panel{min-height:420px}
+  #map{height:480px}
+  footer{height:auto;min-height:40px}
+}
 </style>
 </head>
-<body>
 
+<body>
 <header>
   <div>
     <div class="brand">GBoS GEOAI</div>
@@ -65,21 +104,47 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
 </header>
 
 <main>
-<!-- COLUMN 1 -->
+<!-- COLUMN 1: CONTROLS -->
 <section class="panel">
   <div class="panel-heading">1. Controls &amp; Administrative Filters</div>
 
   <div class="section">
     <h3>EA geographic data</h3>
-    <label for="eaUrl">EA GeoJSON URL</label>
-    <input id="eaUrl" value="./Census_EAs_Geo.json">
-    <label for="eaFile">Or select a local EA GeoJSON file</label>
-    <input id="eaFile" type="file" accept=".json,.geojson,application/geo+json">
-    <div class="btn-row">
-      <button id="loadEA">Load EA boundaries</button>
-      <button id="fitGambia" class="secondary">Fit all EAs</button>
+
+    <label for="eaUrl">Hosted EA GeoJSON URL</label>
+    <input id="eaUrl" type="url" value="./Census_EAs_Geo.json"
+      placeholder="Enter a direct GeoJSON URL">
+
+    <button id="loadEA" type="button" style="margin-top:8px">
+      Load GeoJSON URL
+    </button>
+
+    <label>Or select a local EA GeoJSON file</label>
+
+    <input id="eaFile" type="file"
+      accept=".json,.geojson,application/json,application/geo+json">
+
+    <label for="eaFile" class="file-button">
+      <span id="chooseFileText">Choose GeoJSON file</span>
+    </label>
+
+    <div id="eaFileName" class="note" style="margin-top:8px">
+      No local file selected.
     </div>
-    <p class="note">The EA polygons provide the spatial coverage used to filter healthcare facilities. Load the file before applying administrative filters.</p>
+
+    <div id="eaLoadStatus" class="status" style="margin-top:10px">
+      Choose a file or load a hosted GeoJSON URL.
+    </div>
+
+    <div class="btn-row">
+      <button id="fitGambia" class="secondary" type="button">Fit all EAs</button>
+      <button id="clearEA" class="secondary" type="button">Clear data</button>
+    </div>
+
+    <p class="note">
+      The file should be a GeoJSON FeatureCollection containing EA polygons
+      and administrative properties. Large files may take time to load.
+    </p>
   </div>
 
   <div class="section">
@@ -87,17 +152,17 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
 
     <label for="lgaFilter">LGA / region</label>
     <select id="lgaFilter">
-      <option value="">All LGAs — select an LGA</option>
+      <option value="">Load EA data first</option>
     </select>
 
     <label for="districtFilter">District</label>
     <select id="districtFilter" disabled>
-      <option value="">All districts — select an LGA first</option>
+      <option value="">Select an LGA first</option>
     </select>
 
     <label for="wardFilter">Ward</label>
     <select id="wardFilter" disabled>
-      <option value="">All wards — select a district first</option>
+      <option value="">Select a district first</option>
     </select>
 
     <label for="populationField">EA population field</label>
@@ -108,18 +173,19 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
       <option value="enum_pop">enum_pop</option>
     </select>
 
-    <div class="btn-row">
-      <button id="applyFilters">Apply filters</button>
-      <button id="reset" class="secondary">Reset</button>
-    </div>
     <div id="adminStatus" class="status" style="margin-top:10px">
-      Load EA boundaries, then select an LGA, district, or ward.
+      Load EA data, then choose an administrative area.
     </div>
-    <p class="note">Selecting a district or ward narrows the parent selection. If only an LGA is selected, all its districts and wards are included.</p>
+
+    <div class="btn-row">
+      <button id="applyFilters" type="button">Apply filters</button>
+      <button id="reset" type="button" class="secondary">Reset filters</button>
+    </div>
   </div>
 
   <div class="section">
     <h3>Healthcare facilities</h3>
+
     <label for="facilityType">Facility category</label>
     <select id="facilityType">
       <option value="all">All healthcare categories</option>
@@ -130,14 +196,23 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
       <option value="dentist">Dental services</option>
       <option value="other">Other healthcare facilities</option>
     </select>
+
     <label for="facilitySearch">Search facility name</label>
-    <input id="facilitySearch" placeholder="Search current selection">
-    <button id="loadFacilities" style="margin-top:10px">Load / refresh facilities</button>
-    <p class="note">Facility data comes from OpenStreetMap via Overpass. API availability and mapping completeness may vary.</p>
+    <input id="facilitySearch" type="search" placeholder="Search facilities">
+
+    <button id="loadFacilities" type="button" style="margin-top:10px">
+      Load / refresh facilities
+    </button>
+
+    <p class="note">
+      Facilities are queried from OpenStreetMap through Overpass.
+      Results depend on network availability and mapped data completeness.
+    </p>
   </div>
 
   <div class="section">
     <h3>Map layers and basemap</h3>
+
     <label for="basemap">Basemap</label>
     <select id="basemap">
       <option value="street">Street map</option>
@@ -146,44 +221,54 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
       <option value="terrain">Terrain</option>
       <option value="dark">Dark map</option>
     </select>
-    <label><input type="checkbox" id="showEAs" checked> Show EA boundaries</label>
-    <label><input type="checkbox" id="showPopulation"> Shade EAs by population</label>
-    <label><input type="checkbox" id="showFacilities" checked> Show healthcare facilities</label>
+
+    <label><input id="showEAs" type="checkbox" checked> Show EA boundaries</label>
+    <label><input id="showPopulation" type="checkbox"> Shade EAs by population</label>
+    <label><input id="showFacilities" type="checkbox" checked> Show healthcare facilities</label>
   </div>
 
   <div class="section">
     <h3>Route analysis</h3>
+
     <label for="routeStart">Starting facility</label>
     <select id="routeStart"><option value="">Select a facility</option></select>
+
     <label for="routeEnd">Destination facility</label>
     <select id="routeEnd"><option value="">Select a destination</option></select>
+
     <div class="btn-row">
-      <button id="makeRoute">Calculate route</button>
-      <button id="clearRoute" class="secondary">Clear route</button>
+      <button id="makeRoute" type="button">Calculate route</button>
+      <button id="clearRoute" type="button" class="secondary">Clear route</button>
     </div>
+
     <label for="radius">Proximity radius (km)</label>
     <input id="radius" type="number" min="1" max="100" value="5">
-    <button id="analyseRadius" style="margin-top:10px">Analyse proximity</button>
+    <button id="analyseRadius" type="button" style="margin-top:10px">Analyse proximity</button>
   </div>
 
   <div class="section">
-    <h3>Export</h3>
+    <h3>Export results</h3>
     <div class="btn-row">
-      <button id="exportFacilities">Facilities CSV</button>
-      <button id="exportEAs" class="secondary">Selected EAs CSV</button>
+      <button id="exportFacilities" type="button">Facilities CSV</button>
+      <button id="exportEAs" type="button" class="secondary">Selected EAs CSV</button>
     </div>
-    <button id="exportSummary" class="secondary" style="margin-top:8px">Summary CSV</button>
+    <button id="exportSummary" type="button" class="secondary" style="margin-top:8px">
+      Summary CSV
+    </button>
   </div>
 </section>
 
-<!-- COLUMN 2 -->
+<!-- COLUMN 2: MAP -->
 <section class="panel">
   <div class="panel-heading">2. Interactive Map</div>
+
   <div class="map-tools">
     <div id="mapStatus" class="status">Load EA boundaries to begin.</div>
-    <button id="zoomSelected" class="secondary">Zoom to selected area</button>
+    <button id="zoomSelected" class="secondary" type="button">Zoom to selection</button>
   </div>
+
   <div id="map"></div>
+
   <div class="legend">
     <strong>Persistent map legend</strong>
     <div class="legend-item"><span class="swatch" style="background:#d8e8f8"></span> EA boundary</div>
@@ -191,23 +276,41 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
     <div class="legend-item"><span class="swatch" style="background:#f4a261"></span> Population-shaded EA</div>
     <div class="legend-item"><span class="swatch" style="background:#c83b42;border-radius:50%"></span> Hospital</div>
     <div class="legend-item"><span class="swatch" style="background:#16845b;border-radius:50%"></span> Clinic / health centre</div>
-    <div class="legend-item"><span class="swatch" style="background:#1769aa;border-radius:50%"></span> Other facility categories</div>
-    <div class="legend-item"><span class="legend-line"></span> Road route</div>
-    <p class="note">Facility markers are hidden unless an administrative selection is valid and facilities are spatially inside its EA polygons.</p>
+    <div class="legend-item"><span class="swatch" style="background:#1769aa;border-radius:50%"></span> Other facility category</div>
+    <div class="legend-item"><span class="legend-line"></span> Calculated route</div>
+    <p class="note">
+      Facility markers appear only after EA boundaries and a valid administrative selection are available.
+    </p>
   </div>
 </section>
 
-<!-- COLUMN 3 -->
+<!-- COLUMN 3: ANALYTICS -->
 <section class="panel">
   <div class="panel-heading">3. Analytics &amp; Interpretation</div>
 
   <div class="section">
     <h3>Selected area indicators</h3>
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Selected EAs</div><div class="kpi-value" id="kpiEAs">0</div><div class="kpi-sub">EA polygons</div></div>
-      <div class="kpi"><div class="kpi-label">EA population</div><div class="kpi-value" id="kpiPopulation">—</div><div class="kpi-sub">Selected population field</div></div>
-      <div class="kpi"><div class="kpi-label">Facilities</div><div class="kpi-value" id="kpiFacilities">0</div><div class="kpi-sub">Current selection</div></div>
-      <div class="kpi"><div class="kpi-label">Facilities per 10,000 people</div><div class="kpi-value" id="kpiRate">—</div><div class="kpi-sub">Descriptive indicator</div></div>
+      <div class="kpi">
+        <div class="kpi-label">Selected EAs</div>
+        <div id="kpiEAs" class="kpi-value">0</div>
+        <div class="kpi-sub">EA polygons</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">EA population</div>
+        <div id="kpiPopulation" class="kpi-value">—</div>
+        <div class="kpi-sub">Selected population field</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Healthcare facilities</div>
+        <div id="kpiFacilities" class="kpi-value">0</div>
+        <div class="kpi-sub">Current selection</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Facilities per 10,000 people</div>
+        <div id="kpiRate" class="kpi-value">—</div>
+        <div class="kpi-sub">Descriptive indicator</div>
+      </div>
     </div>
   </div>
 
@@ -217,30 +320,33 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
   </div>
 
   <div class="section">
-    <h3>Population distribution across EAs</h3>
+    <h3>EA population distribution</h3>
     <div class="chart-wrap"><canvas id="populationChart"></canvas></div>
   </div>
 
   <div class="section">
     <h3>Analysis description</h3>
-    <div id="analysisText" class="status">Load EA data and select an administrative area.</div>
-    <p id="radiusText" class="note" style="margin-top:10px">Proximity analysis has not been run.</p>
+    <div id="analysisText" class="status">
+      Load EA data and select an administrative area.
+    </div>
+    <p id="radiusText" class="note" style="margin-top:10px">
+      Proximity analysis has not been run.
+    </p>
   </div>
 
   <div class="section">
     <h3>Methodology and limitations</h3>
     <p class="note">
-      <strong>Administrative filters:</strong> LGA, district and ward values are read from the loaded EA GeoJSON properties. District options depend on the selected LGA; ward options depend on the selected district.
+      <strong>Administrative filtering:</strong> the application reads LGA, district and ward values from EA GeoJSON properties.
+      District choices depend on the selected LGA, and ward choices depend on the selected district.
       <br><br>
-      <strong>Spatial filtering:</strong> facilities are checked against loaded EA polygon geometry. A facility must be inside the national EA polygon coverage and inside the selected administrative EA polygons to be displayed.
+      <strong>Population:</strong> the population total is calculated from the selected EA population property. Missing or invalid values are excluded.
       <br><br>
-      <strong>Population:</strong> population totals are calculated from the selected population property. Missing or invalid values are excluded.
+      <strong>Facility screening:</strong> facilities are retained only when their coordinates fall inside the loaded EA polygon coverage and the currently selected administrative polygons.
       <br><br>
-      <strong>Accessibility:</strong> proximity analysis measures distance from EA polygon centroids to mapped facilities. It is not a population-weighted estimate, road-network catchment, or official accessibility measure.
+      <strong>Proximity:</strong> the analysis uses EA polygon centroids and straight-line distances. It is not a road-network travel-time model or population-weighted accessibility estimate.
       <br><br>
-      <strong>Data quality:</strong> OpenStreetMap may omit facilities or contain outdated records. A mapped location does not establish that a facility is open, staffed, equipped or operational.
-      <br><br>
-      <strong>Boundary limitation:</strong> the union of the supplied EA polygons is used as the screening coverage. It is not an independent legal verification of The Gambia's international boundary.
+      <strong>Limitations:</strong> OpenStreetMap may contain incomplete or outdated facility records. EA polygon coverage is used as the geographic screening boundary and does not independently verify the international boundary.
     </p>
   </div>
 
@@ -249,22 +355,24 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
     <p class="note">
       EA boundaries: supplied Census EA GeoJSON.
       <br><br>
-      Healthcare facilities: OpenStreetMap contributors, accessed via Overpass API.
+      Healthcare facilities: OpenStreetMap contributors via Overpass API.
       <br><br>
-      Map: Leaflet with OpenStreetMap, Esri, CARTO and OpenTopoMap basemaps.
+      Basemaps: OpenStreetMap, Esri, CARTO and OpenTopoMap.
       <br><br>
-      Routing: OSRM-compatible service via Leaflet Routing Machine.
+      Mapping: Leaflet. Charts: Chart.js. Routing: Leaflet Routing Machine and its configured routing service.
       <br><br>
-      Charts: Chart.js.
+      <strong>Produced by Ansu Singhateh</strong><br>
+      GIS Analyst | GIS / Cartography Unit | GBoS
       <br><br>
-      Results are for geospatial screening and research. Validate data before official publication.
+      GBoS GEOAI • Research and educational use
     </p>
-    <p class="note"><strong>Produced by Ansu Singhateh</strong><br>GIS Analyst | GIS / Cartography Unit | GBoS<br>GBoS GEOAI • Research and educational use</p>
   </div>
 </section>
 </main>
 
-<footer>GBoS GEOAI • Healthcare Facility Accessibility &amp; EA Population Intelligence • Produced by Ansu Singhateh</footer>
+<footer>
+  GBoS GEOAI • Healthcare Facility Accessibility &amp; EA Population Intelligence • Produced by Ansu Singhateh
+</footer>
 
 <script>
 "use strict";
@@ -272,667 +380,1278 @@ input[type=checkbox]{width:auto;min-height:auto;margin-right:5px}
 const $ = id => document.getElementById(id);
 
 const ADMIN_KEYS = {
-  lga:["lganame","LGA","lga","region","Region","REGION"],
-  district:["distname","district","District","DISTRICT"],
-  ward:["wardname","ward","Ward","WARD"]
+  lga: ["lganame","LGA","lga","region","Region","REGION","lga_name"],
+  district: ["distname","district","District","DISTRICT","districtname","district_name"],
+  ward: ["wardname","ward","Ward","WARD","ward_name"]
 };
 
-const POP_FIELDS=["map_pop","ls_pop","enum_pop","population","POP","pop","sum_pop","sum_popul"];
+const POP_FIELDS = [
+  "map_pop","ls_pop","enum_pop","population","POP","pop","sum_pop","sum_popul"
+];
 
-let eaFeatures=[];
-let allFacilities=[];
-let facilitiesLoaded=false;
-let activeAdminLevel="";
-let activeAdminValue="";
-let facilityChart=null;
-let populationChart=null;
-let routeControl=null;
-let radiusLayer=null;
-let baseLayer=null;
+let eaFeatures = [];
+let allFacilities = [];
+let facilitiesLoaded = false;
+let activeAdminLevel = "";
+let activeAdminValue = "";
+let facilityChart = null;
+let populationChart = null;
+let routeControl = null;
 
-const map=L.map("map").setView([13.45,-15.5],8);
-const facilityLayer=L.layerGroup().addTo(map);
-const eaLayer=L.geoJSON(null).addTo(map);
-const selectionLayer=L.geoJSON(null).addTo(map);
-
-const basemaps={
-  street:L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"}),
-  satellite:L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles © Esri"}),
-  hybrid:L.layerGroup([
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles © Esri"}),
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",{maxZoom:19,attribution:"© CARTO"})
-  ]),
-  terrain:L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:"© OpenTopoMap"}),
-  dark:L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{maxZoom:19,attribution:"© CARTO"})
-};
-
-function setBasemap(name){
-  if(baseLayer)map.removeLayer(baseLayer);
-  baseLayer=basemaps[name]||basemaps.street;
-  baseLayer.addTo(map);
-}
-setBasemap("street");
-
-function status(id,message,type=""){
-  $(id).textContent=message;
-  $(id).className="status"+(type?" "+type:"");
+function status(id, message, type = "") {
+  const el = $(id);
+  el.textContent = message;
+  el.className = "status" + (type ? " " + type : "");
 }
 
-function norm(v){return String(v??"").trim()}
+function norm(value) {
+  return String(value ?? "").trim();
+}
 
-function getProp(props,keys){
-  for(const k of keys){
-    if(props&&props[k]!==undefined&&props[k]!==null&&norm(props[k])!=="")return props[k];
+function getProp(properties, keys) {
+  if (!properties) return "";
+  for (const key of keys) {
+    if (properties[key] !== undefined &&
+        properties[key] !== null &&
+        norm(properties[key]) !== "") {
+      return properties[key];
+    }
   }
   return "";
 }
 
-function admin(f,level){return norm(getProp(f.properties||{},ADMIN_KEYS[level]))}
-
-function populationField(){
-  const selected=$("populationField").value;
-  if(selected!=="auto")return selected;
-  const props=eaFeatures.find(f=>f.properties)?.properties||{};
-  return POP_FIELDS.find(k=>props[k]!==undefined&&props[k]!==null)||"";
+function admin(feature, level) {
+  return norm(getProp(feature.properties || {}, ADMIN_KEYS[level]));
 }
 
-function pop(f){
-  const field=populationField();
-  if(!field)return null;
-  const value=Number(f.properties?.[field]);
-  return Number.isFinite(value)?value:null;
+function populationField() {
+  const requested = $("populationField").value;
+  if (requested !== "auto") return requested;
+
+  const properties = eaFeatures.find(f => f.properties)?.properties || {};
+  return POP_FIELDS.find(key =>
+    properties[key] !== undefined &&
+    properties[key] !== null &&
+    norm(properties[key]) !== ""
+  ) || "";
 }
 
-function uniqueValues(features,level){
-  return [...new Set(features.map(f=>admin(f,level)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+function population(feature) {
+  const field = populationField();
+  if (!field) return null;
+
+  const value = feature.properties?.[field];
+  if (value === null || value === undefined || norm(value) === "") return null;
+
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
-function fillSelect(id,values,placeholder,oldValue=""){
-  const el=$(id);
-  el.innerHTML="";
-  const first=document.createElement("option");
-  first.value="";
-  first.textContent=placeholder;
-  el.appendChild(first);
-  values.forEach(v=>{
-    const o=document.createElement("option");
-    o.value=v;o.textContent=v;el.appendChild(o);
-  });
-  if(values.includes(oldValue))el.value=oldValue;
+function uniqueValues(features, level) {
+  return [...new Set(features.map(f => admin(f, level)).filter(Boolean))]
+    .sort((a,b) => a.localeCompare(b));
 }
 
-function populateLGAs(){
-  fillSelect("lgaFilter",uniqueValues(eaFeatures,"lga"),"Select an LGA");
-  fillSelect("districtFilter",[],"Select an LGA first");
-  fillSelect("wardFilter",[],"Select a district first");
-  $("districtFilter").disabled=true;
-  $("wardFilter").disabled=true;
-}
+function fillSelect(id, values, placeholder) {
+  const select = $(id);
+  select.innerHTML = "";
 
-function selectedEAs(){
-  if(!eaFeatures.length||!activeAdminLevel||!activeAdminValue)return [];
-  return eaFeatures.filter(f=>{
-    if(admin(f,activeAdminLevel)!==activeAdminValue)return false;
-    if(activeAdminLevel==="district"||activeAdminLevel==="ward"){
-      if(admin(f,"lga")!==$("lgaFilter").value)return false;
-    }
-    if(activeAdminLevel==="ward"){
-      if(admin(f,"district")!==$("districtFilter").value)return false;
-    }
-    return true;
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = placeholder;
+  select.appendChild(first);
+
+  values.forEach(value => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.appendChild(option);
   });
 }
 
-function validSelection(){
-  return eaFeatures.length>0&&!!activeAdminLevel&&!!activeAdminValue&&selectedEAs().length>0;
+function populateLGAs() {
+  fillSelect("lgaFilter", uniqueValues(eaFeatures, "lga"), "Select an LGA");
+  fillSelect("districtFilter", [], "Select an LGA first");
+  fillSelect("wardFilter", [], "Select a district first");
+
+  $("districtFilter").disabled = true;
+  $("wardFilter").disabled = true;
 }
 
-function pointInRing(point,ring){
-  let inside=false;
-  const x=point[0],y=point[1];
-  for(let i=0,j=ring.length-1;i<ring.length;j=i++){
-    const xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1];
-    const crosses=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/((yj-yi)||1e-15)+xi);
-    if(crosses)inside=!inside;
+function selectedEAs() {
+  if (!eaFeatures.length || !activeAdminLevel || !activeAdminValue) return [];
+
+  const lga = $("lgaFilter").value;
+  const district = $("districtFilter").value;
+  const ward = $("wardFilter").value;
+
+  return eaFeatures.filter(feature => {
+    if (activeAdminLevel === "lga") {
+      return admin(feature, "lga") === lga;
+    }
+
+    if (activeAdminLevel === "district") {
+      return admin(feature, "lga") === lga &&
+        admin(feature, "district") === district;
+    }
+
+    if (activeAdminLevel === "ward") {
+      return admin(feature, "lga") === lga &&
+        admin(feature, "district") === district &&
+        admin(feature, "ward") === ward;
+    }
+
+    return false;
+  });
+}
+
+function validSelection() {
+  return eaFeatures.length > 0 &&
+    Boolean(activeAdminLevel) &&
+    Boolean(activeAdminValue) &&
+    selectedEAs().length > 0;
+}
+
+/* Leaflet map and basemaps */
+const map = L.map("map").setView([13.45, -15.5], 8);
+
+const eaLayer = L.layerGroup().addTo(map);
+const selectionLayer = L.layerGroup().addTo(map);
+const facilityLayer = L.layerGroup().addTo(map);
+
+const basemaps = {
+  street: L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {maxZoom:19, attribution:"© OpenStreetMap contributors"}
+  ),
+  satellite: L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {maxZoom:19, attribution:"Tiles © Esri"}
+  ),
+  hybrid: L.layerGroup([
+    L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {maxZoom:19, attribution:"Tiles © Esri"}
+    ),
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+      {maxZoom:19, attribution:"© CARTO"}
+    )
+  ]),
+  terrain: L.tileLayer(
+    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    {maxZoom:17, attribution:"© OpenTopoMap"}
+  ),
+  dark: L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    {maxZoom:19, attribution:"© CARTO"}
+  )
+};
+
+let currentBasemap = null;
+
+function setBasemap(name) {
+  if (currentBasemap) map.removeLayer(currentBasemap);
+  currentBasemap = basemaps[name] || basemaps.street;
+  currentBasemap.addTo(map);
+}
+
+setBasemap("street");
+
+function fitAllEAs() {
+  if (!eaFeatures.length) {
+    map.setView([13.45, -15.5], 8);
+    return;
   }
+
+  const layer = L.geoJSON({
+    type: "FeatureCollection",
+    features: eaFeatures
+  });
+
+  if (layer.getBounds().isValid()) {
+    map.fitBounds(layer.getBounds().pad(0.04));
+  }
+}
+
+function zoomSelected() {
+  const features = selectedEAs();
+  if (!features.length) return;
+
+  const layer = L.geoJSON({
+    type: "FeatureCollection",
+    features
+  });
+
+  if (layer.getBounds().isValid()) {
+    map.fitBounds(layer.getBounds().pad(0.08));
+  }
+}
+
+/* Point-in-polygon checks */
+function pointInRing(point, ring) {
+  let inside = false;
+  const x = point[0], y = point[1];
+
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+
+    const crosses = ((yi > y) !== (yj > y)) &&
+      (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-15) + xi);
+
+    if (crosses) inside = !inside;
+  }
+
   return inside;
 }
 
-function pointInPolygon(point,poly){
-  if(!poly?.length||!pointInRing(point,poly[0]))return false;
-  for(let i=1;i<poly.length;i++)if(pointInRing(point,poly[i]))return false;
+function pointInPolygon(point, polygon) {
+  if (!polygon?.length || !pointInRing(point, polygon[0])) return false;
+
+  // Exclude points inside holes.
+  for (let i = 1; i < polygon.length; i++) {
+    if (pointInRing(point, polygon[i])) return false;
+  }
+
   return true;
 }
 
-function insideGeometry(lon,lat,geometry){
-  if(!geometry?.coordinates)return false;
-  const p=[lon,lat];
-  if(geometry.type==="Polygon")return pointInPolygon(p,geometry.coordinates);
-  if(geometry.type==="MultiPolygon")return geometry.coordinates.some(poly=>pointInPolygon(p,poly));
+function insideGeometry(lon, lat, geometry) {
+  if (!geometry?.coordinates) return false;
+
+  const point = [lon, lat];
+
+  if (geometry.type === "Polygon") {
+    return pointInPolygon(point, geometry.coordinates);
+  }
+
+  if (geometry.type === "MultiPolygon") {
+    return geometry.coordinates.some(polygon =>
+      pointInPolygon(point, polygon)
+    );
+  }
+
   return false;
 }
 
-function insideFeatures(f,features){
-  return features.some(e=>insideGeometry(f.lon,f.lat,e.geometry));
+function insideFeatures(facility, features) {
+  return features.some(feature =>
+    insideGeometry(facility.lon, facility.lat, feature.geometry)
+  );
 }
 
-function insideNationalCoverage(f){
-  return eaFeatures.length>0&&insideFeatures(f,eaFeatures);
+function insideNationalCoverage(facility) {
+  return eaFeatures.length > 0 && insideFeatures(facility, eaFeatures);
 }
 
-function insideSelectedArea(f){
-  return validSelection()&&insideNationalCoverage(f)&&insideFeatures(f,selectedEAs());
+function insideSelectedArea(facility) {
+  return validSelection() &&
+    insideNationalCoverage(facility) &&
+    insideFeatures(facility, selectedEAs());
 }
 
-function visibleFacilities(){
-  if(!validSelection()||!facilitiesLoaded)return [];
-  const type=$("facilityType").value;
-  const search=$("facilitySearch").value.trim().toLowerCase();
-  return allFacilities.filter(f=>{
-    if(!insideSelectedArea(f))return false;
-    if(type!=="all"&&f.category!==type)return false;
-    if(search&&!(`${f.name} ${f.category} ${f.tagsString}`).toLowerCase().includes(search))return false;
-    return true;
-  });
-}
-
-function safe(s){
-  return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-
-function colorFor(category){
-  if(category==="hospital")return "#c83b42";
-  if(category==="clinic")return "#16845b";
-  return "#1769aa";
-}
-
-function updateFacilityDropdowns(features){
-  ["routeStart","routeEnd"].forEach(id=>{
-    const old=$(id).value;
-    $(id).innerHTML='<option value="">Select a facility</option>';
-    features.forEach(f=>{
-      const o=document.createElement("option");
-      o.value=f.id;o.textContent=`${f.name} (${f.category})`;
-      $(id).appendChild(o);
-    });
-    if(features.some(f=>f.id===old))$(id).value=old;
-  });
-}
-
-function drawFacilities(){
-  facilityLayer.clearLayers();
-  if(!validSelection()||!facilitiesLoaded||!$("showFacilities").checked){
-    updateFacilityDropdowns([]);
-    return;
-  }
-  const list=visibleFacilities();
-  list.forEach(f=>{
-    L.circleMarker([f.lat,f.lon],{
-      radius:f.category==="hospital"?8:6,
-      color:"#fff",weight:1.5,fillColor:colorFor(f.category),fillOpacity:.95
-    }).bindPopup(
-      `<strong>${safe(f.name)}</strong><br>Category: ${safe(f.category)}<br>`+
-      `Selected area: ${safe(activeAdminValue)}<br>Source: OpenStreetMap`
-    ).addTo(facilityLayer);
-  });
-  updateFacilityDropdowns(list);
-}
-
-function drawEAs(){
+/* EA boundary styling and popups */
+function drawEAs() {
   eaLayer.clearLayers();
   selectionLayer.clearLayers();
-  if(!$("showEAs").checked||!eaFeatures.length)return;
 
-  eaFeatures.forEach(f=>{
-    const value=pop(f);
-    let fill="#d8e8f8";
-    if($("showPopulation").checked&&value!==null){
-      if(value<100)fill="#ffffcc";
-      else if(value<300)fill="#ffeda0";
-      else if(value<600)fill="#feb24c";
-      else if(value<1000)fill="#f03b20";
-      else fill="#bd0026";
+  if (!$("showEAs").checked || !eaFeatures.length) return;
+
+  const features = eaFeatures;
+  const usePopulation = $("showPopulation").checked;
+
+  features.forEach(feature => {
+    const value = population(feature);
+    let fill = "#d8e8f8";
+
+    if (usePopulation && value !== null) {
+      if (value < 100) fill = "#ffffcc";
+      else if (value < 300) fill = "#ffeda0";
+      else if (value < 600) fill = "#feb24c";
+      else if (value < 1000) fill = "#f03b20";
+      else fill = "#bd0026";
     }
-    L.geoJSON(f,{
-      style:{color:"#75869b",weight:.5,fillColor:fill,fillOpacity:.4},
-      onEachFeature:(feature,layer)=>{
-        layer.bindPopup(
-          `<strong>Enumeration Area</strong><br>LGA: ${safe(admin(feature,"lga"))}`+
-          `<br>District: ${safe(admin(feature,"district"))}`+
-          `<br>Ward: ${safe(admin(feature,"ward"))}`+
-          `<br>Population (${safe(populationField()||"unavailable")}): ${pop(feature)??"Unavailable"}`
+
+    const layer = L.geoJSON(feature, {
+      style: {
+        color: "#75869b",
+        weight: 0.5,
+        fillColor: fill,
+        fillOpacity: 0.42
+      },
+      onEachFeature: (f, item) => {
+        item.bindPopup(
+          "<strong>Enumeration Area</strong><br>" +
+          "LGA: " + escapeHTML(admin(f, "lga")) + "<br>" +
+          "District: " + escapeHTML(admin(f, "district")) + "<br>" +
+          "Ward: " + escapeHTML(admin(f, "ward")) + "<br>" +
+          "Population field: " + escapeHTML(populationField() || "Unavailable") + "<br>" +
+          "Population: " + (population(f) ?? "Unavailable")
         );
       }
-    }).addTo(eaLayer);
+    });
+
+    layer.addTo(eaLayer);
   });
 
-  const chosen=selectedEAs();
-  if(chosen.length){
-    L.geoJSON({type:"FeatureCollection",features:chosen},{
-      style:{color:"#123c69",weight:2.5,fillColor:"#77b5ed",fillOpacity:.12}
+  const chosen = selectedEAs();
+
+  if (chosen.length) {
+    L.geoJSON({
+      type: "FeatureCollection",
+      features: chosen
+    }, {
+      style: {
+        color: "#123c69",
+        weight: 2.5,
+        fillColor: "#77b5ed",
+        fillOpacity: 0.13
+      }
     }).addTo(selectionLayer);
   }
 }
 
-function drawCharts(){
-  const facilities=visibleFacilities();
-  const cats=["hospital","clinic","doctor","pharmacy","dentist","other"];
-  const counts=cats.map(c=>facilities.filter(f=>f.category===c).length);
-
-  if(facilityChart)facilityChart.destroy();
-  facilityChart=new Chart($("facilityChart"),{
-    type:"bar",
-    data:{
-      labels:["Hospitals","Clinics","Doctors","Pharmacies","Dental","Other"],
-      datasets:[{data:counts,backgroundColor:["#c83b42","#16845b","#1769aa","#d68b17","#7856a5","#718096"]}]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
-  });
-
-  const values=selectedEAs().map(pop).filter(v=>v!==null&&v>=0);
-  const bins=[
-    {label:"0–99",min:0,max:100},
-    {label:"100–299",min:100,max:300},
-    {label:"300–599",min:300,max:600},
-    {label:"600–999",min:600,max:1000},
-    {label:"1,000+",min:1000,max:Infinity}
-  ];
-  const binCounts=bins.map(b=>values.filter(v=>v>=b.min&&v<b.max).length);
-
-  if(populationChart)populationChart.destroy();
-  populationChart=new Chart($("populationChart"),{
-    type:"bar",
-    data:{labels:bins.map(b=>b.label),datasets:[{label:"Number of EAs",data:binCounts,backgroundColor:"#1769aa"}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
-  });
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[character]));
 }
 
-function updateAnalytics(){
-  const eas=selectedEAs();
-  const facilities=visibleFacilities();
-  const values=eas.map(pop).filter(v=>v!==null);
-  const total=values.reduce((a,b)=>a+b,0);
-  const hasPopulation=values.length>0;
+/* Facility categories and display */
+function categoryFromTags(tags) {
+  const amenity = tags.amenity || "";
+  const healthcare = tags.healthcare || "";
 
-  $("kpiEAs").textContent=eas.length.toLocaleString();
-  $("kpiPopulation").textContent=hasPopulation?Math.round(total).toLocaleString():"—";
-  $("kpiFacilities").textContent=facilities.length.toLocaleString();
-  $("kpiRate").textContent=total>0?(facilities.length/total*10000).toFixed(2):"—";
+  if (amenity === "hospital" || healthcare === "hospital") return "hospital";
 
-  const counts={hospital:0,clinic:0,doctor:0,pharmacy:0,dentist:0,other:0};
-  facilities.forEach(f=>counts[f.category]=(counts[f.category]||0)+1);
+  if (
+    ["clinic","health_post","centre"].includes(amenity) ||
+    ["clinic","health_centre","health_post"].includes(healthcare)
+  ) return "clinic";
 
-  if(!validSelection()){
-    $("analysisText").textContent="Select an LGA, district, or ward to display facilities and calculate statistics.";
-  }else{
-    $("analysisText").textContent=
-      `${activeAdminLevel.toUpperCase()}: ${activeAdminValue}. `+
-      `${eas.length} EA polygons are selected. ${facilities.length} mapped facilities fall within the selected EA polygons. `+
-      `Hospitals: ${counts.hospital}; clinics: ${counts.clinic}; doctors: ${counts.doctor}; `+
-      `pharmacies: ${counts.pharmacy}; dental: ${counts.dentist}; other: ${counts.other}. `+
-      (hasPopulation?`Summed EA population (${populationField()}): ${Math.round(total).toLocaleString()}.`:"Population values are unavailable.");
+  if (amenity === "pharmacy" || healthcare === "pharmacy") return "pharmacy";
+  if (amenity === "dentist" || healthcare === "dentist") return "dentist";
+  if (amenity === "doctors" || healthcare === "doctor") return "doctor";
+
+  if (healthcare || ["hospital","clinic","doctors","pharmacy","dentist"].includes(amenity)) {
+    return "other";
   }
+
+  return "";
 }
 
-function refresh(){
+function parseFacility(element) {
+  let lat = element.lat;
+  let lon = element.lon;
+
+  if ((!Number.isFinite(lat) || !Number.isFinite(lon)) && element.center) {
+    lat = element.center.lat;
+    lon = element.center.lon;
+  }
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+  const tags = element.tags || {};
+  const category = categoryFromTags(tags);
+  if (!category) return null;
+
+  return {
+    id: String(element.type + "/" + element.id),
+    lat,
+    lon,
+    category,
+    name: tags.name || tags["name:en"] || category + " (" + element.id + ")",
+    tagsString: Object.entries(tags).map(([k,v]) => k + " " + v).join(" ")
+  };
+}
+
+function facilityColour(category) {
+  if (category === "hospital") return "#c83b42";
+  if (category === "clinic") return "#16845b";
+  return "#1769aa";
+}
+
+function visibleFacilities() {
+  if (!validSelection() || !facilitiesLoaded) return [];
+
+  const category = $("facilityType").value;
+  const search = $("facilitySearch").value.trim().toLowerCase();
+
+  return allFacilities.filter(facility => {
+    if (!insideSelectedArea(facility)) return false;
+    if (category !== "all" && facility.category !== category) return false;
+
+    const searchable = (
+      facility.name + " " + facility.category + " " + facility.tagsString
+    ).toLowerCase();
+
+    return !search || searchable.includes(search);
+  });
+}
+
+function updateFacilityDropdowns(features) {
+  ["routeStart","routeEnd"].forEach(id => {
+    const oldValue = $(id).value;
+    $(id).innerHTML = "";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = id === "routeStart" ? "Select a facility" : "Select a destination";
+    $(id).appendChild(first);
+
+    features.forEach(facility => {
+      const option = document.createElement("option");
+      option.value = facility.id;
+      option.textContent = facility.name + " (" + facility.category + ")";
+      $(id).appendChild(option);
+    });
+
+    if (features.some(f => f.id === oldValue)) $(id).value = oldValue;
+  });
+}
+
+function drawFacilities() {
+  facilityLayer.clearLayers();
+
+  if (!validSelection() || !facilitiesLoaded || !$("showFacilities").checked) {
+    updateFacilityDropdowns([]);
+    return;
+  }
+
+  const facilities = visibleFacilities();
+
+  facilities.forEach(facility => {
+    L.circleMarker([facility.lat, facility.lon], {
+      radius: facility.category === "hospital" ? 8 : 6,
+      color: "#ffffff",
+      weight: 1.5,
+      fillColor: facilityColour(facility.category),
+      fillOpacity: 0.95
+    }).bindPopup(
+      "<strong>" + escapeHTML(facility.name) + "</strong><br>" +
+      "Category: " + escapeHTML(facility.category) + "<br>" +
+      "Selected area: " + escapeHTML(activeAdminValue) + "<br>" +
+      "Source: OpenStreetMap"
+    ).addTo(facilityLayer);
+  });
+
+  updateFacilityDropdowns(facilities);
+}
+
+/* Analytics */
+function drawCharts() {
+  const facilities = visibleFacilities();
+  const categories = ["hospital","clinic","doctor","pharmacy","dentist","other"];
+  const counts = categories.map(category =>
+    facilities.filter(f => f.category === category).length
+  );
+
+  if (facilityChart) facilityChart.destroy();
+
+  facilityChart = new Chart($("facilityChart"), {
+    type: "bar",
+    data: {
+      labels: ["Hospitals","Clinics","Doctors","Pharmacies","Dental","Other"],
+      datasets: [{
+        data: counts,
+        backgroundColor: ["#c83b42","#16845b","#1769aa","#d68b17","#7856a5","#718096"]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {legend: {display:false}},
+      scales: {y: {beginAtZero:true, ticks:{precision:0}}}
+    }
+  });
+
+  const values = selectedEAs()
+    .map(population)
+    .filter(value => value !== null && value >= 0);
+
+  const bins = [
+    {label:"0–99", min:0, max:100},
+    {label:"100–299", min:100, max:300},
+    {label:"300–599", min:300, max:600},
+    {label:"600–999", min:600, max:1000},
+    {label:"1,000+", min:1000, max:Infinity}
+  ];
+
+  const binCounts = bins.map(bin =>
+    values.filter(value => value >= bin.min && value < bin.max).length
+  );
+
+  if (populationChart) populationChart.destroy();
+
+  populationChart = new Chart($("populationChart"), {
+    type: "bar",
+    data: {
+      labels: bins.map(bin => bin.label),
+      datasets: [{
+        label: "Number of EAs",
+        data: binCounts,
+        backgroundColor: "#1769aa"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {legend: {display:false}},
+      scales: {y: {beginAtZero:true, ticks:{precision:0}}}
+    }
+  });
+}
+
+function updateAnalytics() {
+  const eas = selectedEAs();
+  const facilities = visibleFacilities();
+  const values = eas.map(population).filter(value => value !== null);
+  const totalPopulation = values.reduce((sum, value) => sum + value, 0);
+
+  $("kpiEAs").textContent = eas.length.toLocaleString();
+  $("kpiPopulation").textContent = values.length
+    ? Math.round(totalPopulation).toLocaleString()
+    : "—";
+
+  $("kpiFacilities").textContent = facilities.length.toLocaleString();
+  $("kpiRate").textContent = totalPopulation > 0
+    ? (facilities.length / totalPopulation * 10000).toFixed(2)
+    : "—";
+
+  const counts = {
+    hospital:0, clinic:0, doctor:0, pharmacy:0, dentist:0, other:0
+  };
+
+  facilities.forEach(facility => {
+    counts[facility.category] = (counts[facility.category] || 0) + 1;
+  });
+
+  if (!validSelection()) {
+    $("analysisText").textContent =
+      "Select an LGA, district, or ward to display facilities and calculate statistics.";
+    return;
+  }
+
+  $("analysisText").textContent =
+    activeAdminLevel.toUpperCase() + ": " + activeAdminValue + ". " +
+    eas.length + " EA polygons selected. " +
+    facilities.length + " mapped facilities inside the selected EA polygons. " +
+    "Hospitals: " + counts.hospital + "; clinics: " + counts.clinic +
+    "; doctors: " + counts.doctor + "; pharmacies: " + counts.pharmacy +
+    "; dental: " + counts.dentist + "; other: " + counts.other + ". " +
+    (values.length
+      ? "Summed EA population (" + populationField() + "): " +
+        Math.round(totalPopulation).toLocaleString() + "."
+      : "Population values are unavailable.");
+}
+
+function refresh() {
   drawEAs();
   drawFacilities();
   updateAnalytics();
-
-  if(!eaFeatures.length){
-    status("mapStatus","EA boundaries are not loaded. Facility display is blocked.","error");
-  }else if(!validSelection()){
-    status("mapStatus","Select an LGA, district, or ward. Facilities remain hidden.");
-  }else{
-    status("mapStatus",`${activeAdminLevel.toUpperCase()}: ${activeAdminValue} · ${selectedEAs().length} EAs · ${visibleFacilities().length} facilities.`, "success");
-  }
   drawCharts();
+
+  if (!eaFeatures.length) {
+    status("mapStatus", "EA boundaries are not loaded.", "error");
+  } else if (!validSelection()) {
+    status("mapStatus", "Select an LGA, district, or ward. Facilities remain hidden.");
+  } else {
+    status(
+      "mapStatus",
+      activeAdminLevel.toUpperCase() + ": " + activeAdminValue +
+      " · " + selectedEAs().length + " EAs · " +
+      visibleFacilities().length + " facilities.",
+      "success"
+    );
+  }
 }
 
-function zoomSelected(){
-  const chosen=selectedEAs();
-  if(!chosen.length)return;
-  const layer=L.geoJSON({type:"FeatureCollection",features:chosen});
-  if(layer.getBounds().isValid())map.fitBounds(layer.getBounds().pad(.08));
-}
-
-function fitAllEAs(){
-  if(!eaFeatures.length){map.setView([13.45,-15.5],8);return}
-  const layer=L.geoJSON({type:"FeatureCollection",features:eaFeatures});
-  if(layer.getBounds().isValid())map.fitBounds(layer.getBounds().pad(.04));
-}
-
-function applyAdminFilters(){
-  const lga=$("lgaFilter").value;
-  const district=$("districtFilter").value;
-  const ward=$("wardFilter").value;
-
-  if(!eaFeatures.length){
-    activeAdminLevel="";activeAdminValue="";
-    status("adminStatus","Load the EA GeoJSON first. Facilities remain hidden.","error");
-    refresh();return;
+/* Cascading administrative dropdowns */
+function applyAdminFilters() {
+  if (!eaFeatures.length) {
+    activeAdminLevel = "";
+    activeAdminValue = "";
+    status("adminStatus", "Load EA GeoJSON before selecting an area.", "error");
+    refresh();
+    return;
   }
 
-  if(ward){activeAdminLevel="ward";activeAdminValue=ward}
-  else if(district){activeAdminLevel="district";activeAdminValue=district}
-  else if(lga){activeAdminLevel="lga";activeAdminValue=lga}
-  else{activeAdminLevel="";activeAdminValue=""}
+  const lga = $("lgaFilter").value;
+  const district = $("districtFilter").value;
+  const ward = $("wardFilter").value;
 
-  if(!validSelection()){
-    status("adminStatus","Select a valid LGA, district, or ward to display facilities.","error");
-  }else{
-    status("adminStatus",
-      `Active selection: ${activeAdminLevel.toUpperCase()} — ${activeAdminValue}. `+
-      `${selectedEAs().length} EA polygons define the allowed facility area.`,"success");
+  if (ward) {
+    activeAdminLevel = "ward";
+    activeAdminValue = ward;
+  } else if (district) {
+    activeAdminLevel = "district";
+    activeAdminValue = district;
+  } else if (lga) {
+    activeAdminLevel = "lga";
+    activeAdminValue = lga;
+  } else {
+    activeAdminLevel = "";
+    activeAdminValue = "";
+  }
+
+  if (!validSelection()) {
+    status("adminStatus", "Select a valid LGA, district, or ward.", "error");
+  } else {
+    status(
+      "adminStatus",
+      "Active selection: " + activeAdminLevel.toUpperCase() + " — " +
+      activeAdminValue + ". " + selectedEAs().length + " EA polygons selected.",
+      "success"
+    );
   }
 
   refresh();
-  if(validSelection())zoomSelected();
+
+  if (validSelection()) zoomSelected();
 }
 
-function onLgaChange(){
-  const lga=$("lgaFilter").value;
-  const features=eaFeatures.filter(f=>admin(f,"lga")===lga);
-  fillSelect("districtFilter",lga?uniqueValues(features,"district"):[],
-    lga?"All districts — select a district":"Select an LGA first");
-  fillSelect("wardFilter",[],"Select a district first");
-  $("districtFilter").disabled=!lga;
-  $("wardFilter").disabled=true;
+function onLgaChange() {
+  const lga = $("lgaFilter").value;
+
+  const matches = eaFeatures.filter(feature => admin(feature, "lga") === lga);
+
+  fillSelect(
+    "districtFilter",
+    lga ? uniqueValues(matches, "district") : [],
+    lga ? "All districts — select a district" : "Select an LGA first"
+  );
+
+  fillSelect("wardFilter", [], "Select a district first");
+
+  $("districtFilter").disabled = !lga;
+  $("wardFilter").disabled = true;
+
   applyAdminFilters();
 }
 
-function onDistrictChange(){
-  const lga=$("lgaFilter").value;
-  const district=$("districtFilter").value;
-  const features=eaFeatures.filter(f=>admin(f,"lga")===lga&&admin(f,"district")===district);
-  fillSelect("wardFilter",district?uniqueValues(features,"ward"):[],
-    district?"All wards — select a ward":"Select a district first");
-  $("wardFilter").disabled=!district;
+function onDistrictChange() {
+  const lga = $("lgaFilter").value;
+  const district = $("districtFilter").value;
+
+  const matches = eaFeatures.filter(feature =>
+    admin(feature, "lga") === lga &&
+    admin(feature, "district") === district
+  );
+
+  fillSelect(
+    "wardFilter",
+    district ? uniqueValues(matches, "ward") : [],
+    district ? "All wards — select a ward" : "Select a district first"
+  );
+
+  $("wardFilter").disabled = !district;
+
   applyAdminFilters();
 }
 
-async function loadEAObject(data){
-  const input=data?.type==="FeatureCollection"?data.features:data?.type==="Feature"?[data]:[];
-  const features=input.filter(f=>f.geometry&&["Polygon","MultiPolygon"].includes(f.geometry.type)&&f.properties);
-  if(!features.length)throw new Error("No valid Polygon or MultiPolygon EA features found.");
-  if(!features.some(f=>admin(f,"lga")))throw new Error("Could not find the LGA property. Expected lganame, LGA, lga, or region.");
+/* Validate and load GeoJSON */
+async function loadEAObject(data, sourceName = "GeoJSON") {
+  let inputFeatures = [];
 
-  eaFeatures=features;
-  activeAdminLevel="";activeAdminValue="";
+  if (data?.type === "FeatureCollection" && Array.isArray(data.features)) {
+    inputFeatures = data.features;
+  } else if (data?.type === "Feature") {
+    inputFeatures = [data];
+  } else {
+    throw new Error(
+      "The file is not a GeoJSON FeatureCollection or Feature."
+    );
+  }
+
+  const features = inputFeatures.filter(feature =>
+    feature &&
+    feature.geometry &&
+    ["Polygon","MultiPolygon"].includes(feature.geometry.type) &&
+    feature.properties
+  );
+
+  if (!features.length) {
+    throw new Error(
+      "No valid polygon EA features were found. Check the GeoJSON geometry."
+    );
+  }
+
+  const example = features[0].properties;
+  const foundLGA = ADMIN_KEYS.lga.find(key =>
+    example[key] !== undefined && norm(example[key]) !== ""
+  );
+
+  const foundDistrict = ADMIN_KEYS.district.find(key =>
+    example[key] !== undefined && norm(example[key]) !== ""
+  );
+
+  const foundWard = ADMIN_KEYS.ward.find(key =>
+    example[key] !== undefined && norm(example[key]) !== ""
+  );
+
+  if (!foundLGA) {
+    throw new Error(
+      "LGA property not found. Available fields: " +
+      Object.keys(example).join(", ")
+    );
+  }
+
+  // Commit the new dataset only after basic validation.
+  eaFeatures = features;
+  allFacilities = [];
+  facilitiesLoaded = false;
+  activeAdminLevel = "";
+  activeAdminValue = "";
+
+  clearRoute();
   populateLGAs();
   refresh();
   fitAllEAs();
 
-  status("adminStatus",
-    `Loaded ${eaFeatures.length.toLocaleString()} EA polygons. Select an LGA, district, or ward to enable facility display.`,
-    "success");
-  status("mapStatus","EA coverage loaded. Choose an administrative area before loading facilities.","success");
+  const lgaCount = uniqueValues(eaFeatures, "lga").length;
+  const districtCount = uniqueValues(eaFeatures, "district").length;
+  const wardCount = uniqueValues(eaFeatures, "ward").length;
+
+  $("eaFileName").textContent =
+    sourceName + " · " + eaFeatures.length.toLocaleString() + " EA polygons";
+
+  status(
+    "eaLoadStatus",
+    "Loaded successfully: " + eaFeatures.length.toLocaleString() +
+    " EA polygons. Found " + lgaCount + " LGAs, " +
+    districtCount + " districts and " + wardCount + " wards. " +
+    "Fields: LGA=" + foundLGA +
+    ", district=" + (foundDistrict || "not detected") +
+    ", ward=" + (foundWard || "not detected") + ".",
+    "success"
+  );
+
+  status(
+    "adminStatus",
+    "EA data loaded. Select an LGA to populate district and ward options.",
+    "success"
+  );
+
+  status(
+    "mapStatus",
+    "EA boundaries loaded. Select an administrative area before loading facilities.",
+    "success"
+  );
+
+  // Log property names to help diagnose unexpected GeoJSON schemas.
+  console.info("GBoS GEOAI: EA polygons loaded:", eaFeatures.length);
+  console.info("GBoS GEOAI: Example EA properties:", example);
+  console.info("GBoS GEOAI: Administrative fields:", {
+    lga: foundLGA,
+    district: foundDistrict,
+    ward: foundWard
+  });
 }
 
-async function loadEAURL(){
-  const url=$("eaUrl").value.trim();
-  if(!url)throw new Error("Enter a GeoJSON URL.");
-  const response=await fetch(url);
-  if(!response.ok)throw new Error(`GeoJSON request failed: HTTP ${response.status}`);
-  await loadEAObject(await response.json());
-}
+/* URL loading */
+async function loadEAURL() {
+  const url = $("eaUrl").value.trim();
 
-async function loadEAFile(file){
-  await loadEAObject(JSON.parse(await file.text()));
-}
-
-function categoryFromTags(tags){
-  const a=tags.amenity||"",h=tags.healthcare||"";
-  if(a==="hospital"||h==="hospital")return "hospital";
-  if(["clinic","health_post","centre"].includes(a)||["clinic","health_centre","health_post"].includes(h))return "clinic";
-  if(a==="pharmacy"||h==="pharmacy")return "pharmacy";
-  if(a==="dentist"||h==="dentist")return "dentist";
-  if(a==="doctors"||h==="doctor")return "doctor";
-  if(h||["hospital","clinic","doctors","pharmacy","dentist"].includes(a))return "other";
-  return "";
-}
-
-function parseFacility(el){
-  let lat=el.lat,lon=el.lon;
-  if((!Number.isFinite(lat)||!Number.isFinite(lon))&&el.center){lat=el.center.lat;lon=el.center.lon}
-  if(!Number.isFinite(lat)||!Number.isFinite(lon))return null;
-
-  const tags=el.tags||{},category=categoryFromTags(tags);
-  if(!category)return null;
-
-  return {
-    id:String(el.type+"/"+el.id),lat,lon,category,
-    name:tags.name||tags["name:en"]||`${category} (${el.id})`,
-    tagsString:Object.entries(tags).map(([k,v])=>`${k} ${v}`).join(" ")
-  };
-}
-
-async function loadFacilities(){
-  if(!eaFeatures.length){
-    status("adminStatus","Load the EA GeoJSON first.","error");return;
-  }
-  if(!validSelection()){
-    status("adminStatus","Select an LGA, district, or ward before loading facilities.","error");
-    facilityLayer.clearLayers();updateFacilityDropdowns([]);updateAnalytics();drawCharts();return;
+  if (!url) {
+    throw new Error("Enter a hosted GeoJSON URL.");
   }
 
-  status("mapStatus","Querying healthcare facilities and screening them against the selected EA polygons.");
+  status("eaLoadStatus", "Loading GeoJSON URL...");
+  $("loadEA").disabled = true;
 
-  const query=`[out:json][timeout:45];area["ISO3166-1"="GM"][admin_level=2]->.gambia;(nwr["amenity"~"hospital|clinic|doctors|pharmacy|dentist"](area.gambia);nwr["healthcare"](area.gambia););out center tags;`;
-  const endpoints=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
-  let data=null,lastError=null;
+  try {
+    const response = await fetch(url);
 
-  for(const endpoint of endpoints){
-    try{
-      const r=await fetch(endpoint,{
-        method:"POST",
-        headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
-        body:"data="+encodeURIComponent(query)
-      });
-      if(!r.ok)throw new Error("Overpass HTTP "+r.status);
-      data=await r.json();break;
-    }catch(err){lastError=err}
+    if (!response.ok) {
+      throw new Error(
+        "HTTP " + response.status +
+        ". Check that the URL points to the actual GeoJSON file."
+      );
+    }
+
+    const data = await response.json();
+    await loadEAObject(data, "URL");
+
+  } finally {
+    $("loadEA").disabled = false;
   }
+}
 
-  if(!data){
-    status("mapStatus","Could not retrieve facility data. Try again later. "+(lastError?.message||""),"error");
+/* Local file loading */
+async function loadEAFile(file) {
+  if (!file) return;
+
+  status("eaLoadStatus", "Reading local file: " + file.name);
+  $("chooseFileText").textContent = "Reading selected file...";
+
+  try {
+    const text = await file.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(
+        "Invalid JSON. Make sure you selected the original .json or .geojson file."
+      );
+    }
+
+    await loadEAObject(data, file.name);
+
+    $("eaFileName").textContent =
+      "Selected file: " + file.name + " (" +
+      (file.size / 1024 / 1024).toFixed(2) + " MB)";
+
+    $("chooseFileText").textContent = "Choose another GeoJSON file";
+
+  } catch (error) {
+    status("eaLoadStatus", "File loading failed: " + error.message, "error");
+    $("chooseFileText").textContent = "Choose GeoJSON file";
+  }
+}
+
+/* Load healthcare facilities from Overpass */
+async function loadFacilities() {
+  if (!eaFeatures.length) {
+    status("mapStatus", "Load EA boundaries before requesting facilities.", "error");
+    status("adminStatus", "No EA geographic data loaded.", "error");
     return;
   }
 
-  const unique=new Map();
-  for(const el of data.elements||[]){
-    const f=parseFacility(el);
-    if(!f)continue;
-
-    // National coverage gate: discard records outside all supplied EA polygons.
-    if(!insideNationalCoverage(f))continue;
-
-    unique.set(f.id,f);
+  if (!validSelection()) {
+    status(
+      "adminStatus",
+      "Select an LGA, district, or ward before loading facilities.",
+      "error"
+    );
+    status("mapStatus", "Facility loading requires an administrative selection.", "error");
+    return;
   }
 
-  allFacilities=[...unique.values()];
-  facilitiesLoaded=true;
-  refresh();
+  $("loadFacilities").disabled = true;
+  status("mapStatus", "Querying OpenStreetMap healthcare data. Please wait...");
 
-  status("mapStatus",
-    `${visibleFacilities().length} facilities fall within the selected administrative area. `+
-    "Facilities outside loaded EA polygon coverage are excluded.","success");
+  const query =
+    '[out:json][timeout:45];' +
+    'area["ISO3166-1"="GM"][admin_level=2]->.gambia;' +
+    '(' +
+      'nwr["amenity"~"hospital|clinic|doctors|pharmacy|dentist"](area.gambia);' +
+      'nwr["healthcare"](area.gambia);' +
+    ');out center tags;';
+
+  const endpoints = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter"
+  ];
+
+  let data = null;
+  let lastError = null;
+
+  try {
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+          },
+          body: "data=" + encodeURIComponent(query)
+        });
+
+        if (!response.ok) {
+          throw new Error("Overpass HTTP " + response.status);
+        }
+
+        data = await response.json();
+        break;
+
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (!data) {
+      throw new Error(
+        "Healthcare data service unavailable. " +
+        (lastError?.message || "Please try again later.")
+      );
+    }
+
+    const unique = new Map();
+
+    for (const element of data.elements || []) {
+      const facility = parseFacility(element);
+      if (!facility) continue;
+
+      // Exclude locations outside the supplied EA polygon coverage.
+      if (!insideNationalCoverage(facility)) continue;
+
+      unique.set(facility.id, facility);
+    }
+
+    allFacilities = [...unique.values()];
+    facilitiesLoaded = true;
+
+    refresh();
+
+    status(
+      "mapStatus",
+      visibleFacilities().length + " facilities fall within the selected area. " +
+      "Facilities outside loaded EA coverage were excluded.",
+      "success"
+    );
+
+  } catch (error) {
+    status("mapStatus", error.message, "error");
+  } finally {
+    $("loadFacilities").disabled = false;
+  }
 }
 
-function clearRoute(){
-  if(routeControl){map.removeControl(routeControl);routeControl=null}
+/* Routing */
+function clearRoute() {
+  if (routeControl) {
+    map.removeControl(routeControl);
+    routeControl = null;
+  }
 }
 
-function route(){
-  const list=visibleFacilities();
-  const start=list.find(f=>f.id===$("routeStart").value);
-  const end=list.find(f=>f.id===$("routeEnd").value);
+function calculateRoute() {
+  const facilities = visibleFacilities();
 
-  if(!start||!end){
-    status("mapStatus","Choose a starting facility and destination from the current selection.","error");return;
+  const start = facilities.find(f => f.id === $("routeStart").value);
+  const end = facilities.find(f => f.id === $("routeEnd").value);
+
+  if (!start || !end) {
+    status("mapStatus", "Choose two facilities from the current selection.", "error");
+    return;
   }
-  if(!insideSelectedArea(start)||!insideSelectedArea(end)){
-    status("mapStatus","Route blocked: both facilities must be inside the selected area.","error");return;
+
+  if (!insideSelectedArea(start) || !insideSelectedArea(end)) {
+    status("mapStatus", "Both facilities must be inside the selected area.", "error");
+    return;
   }
-  if(!L.Routing?.control){
-    status("mapStatus","Routing service is unavailable. Check internet access.","error");return;
+
+  if (!L.Routing || !L.Routing.control) {
+    status("mapStatus", "Routing library is unavailable.", "error");
+    return;
   }
 
   clearRoute();
-  routeControl=L.Routing.control({
-    waypoints:[L.latLng(start.lat,start.lon),L.latLng(end.lat,end.lon)],
-    addWaypoints:false,draggableWaypoints:false,routeWhileDragging:false,
-    showAlternatives:false,createMarker:()=>null,
-    lineOptions:{styles:[{color:"#1769aa",opacity:.9,weight:5}]}
+
+  routeControl = L.Routing.control({
+    waypoints: [
+      L.latLng(start.lat, start.lon),
+      L.latLng(end.lat, end.lon)
+    ],
+    addWaypoints: false,
+    draggableWaypoints: false,
+    routeWhileDragging: false,
+    showAlternatives: false,
+    createMarker: () => null,
+    lineOptions: {
+      styles: [{color:"#1769aa",opacity:0.9,weight:5}]
+    }
   }).addTo(map);
 
-  routeControl.on("routesfound",e=>{
-    const r=e.routes?.[0];if(!r)return;
-    status("mapStatus",
-      `Route: ${start.name} → ${end.name}. Distance: ${(r.summary.totalDistance/1000).toFixed(1)} km. `+
-      `Estimated time: ${Math.round(r.summary.totalTime/60)} minutes.`,"success");
-  });
-  routeControl.on("routingerror",()=>status("mapStatus","Could not calculate this route. Try again later.","error"));
-}
+  routeControl.on("routesfound", event => {
+    const route = event.routes?.[0];
+    if (!route) return;
 
-function haversine(a,b){
-  const rad=x=>x*Math.PI/180;
-  const dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon);
-  const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
-  return 6371*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
-}
-
-function analyseProximity(){
-  if(!validSelection()){ $("radiusText").textContent="Select an administrative area first.";return}
-  const km=Number($("radius").value);
-  if(!Number.isFinite(km)||km<=0){$("radiusText").textContent="Enter a positive radius in kilometres.";return}
-
-  const facilities=visibleFacilities(),eas=selectedEAs();
-  if(!facilities.length){$("radiusText").textContent="No mapped facilities in this area.";return}
-
-  let covered=0,totalDistance=0;
-  eas.forEach(f=>{
-    const c=L.geoJSON(f).getBounds().getCenter();
-    let nearest=Infinity;
-    facilities.forEach(h=>nearest=Math.min(nearest,haversine({lat:c.lat,lon:c.lng},{lat:h.lat,lon:h.lon})));
-    totalDistance+=nearest;
-    if(nearest<=km)covered++;
+    status(
+      "mapStatus",
+      "Route: " + start.name + " → " + end.name +
+      ". Distance: " + (route.summary.totalDistance / 1000).toFixed(1) +
+      " km. Estimated time: " +
+      Math.round(route.summary.totalTime / 60) + " minutes.",
+      "success"
+    );
   });
 
-  const pct=eas.length?covered/eas.length*100:0;
-  $("radiusText").textContent=
-    `${covered} of ${eas.length} EA centroids (${pct.toFixed(1)}%) are within ${km} km straight-line distance `+
-    `of a displayed facility. Mean nearest-facility distance: ${(totalDistance/eas.length).toFixed(2)} km. `+
-    "This is a centroid-based proxy, not road-network accessibility.";
+  routeControl.on("routingerror", () => {
+    status("mapStatus", "Route calculation failed. Try again later.", "error");
+  });
 }
 
-function downloadCSV(filename,rows){
-  if(!rows.length){status("mapStatus","No records available for export.","error");return}
-  const keys=[...new Set(rows.flatMap(r=>Object.keys(r)))];
-  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
-  const csv=[keys.map(q).join(","),...rows.map(r=>keys.map(k=>q(r[k])).join(","))].join("\r\n");
-  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download=filename;a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+/* Centroid-to-facility proximity screening */
+function haversine(a, b) {
+  const radians = degrees => degrees * Math.PI / 180;
+  const dLat = radians(b.lat - a.lat);
+  const dLon = radians(b.lon - a.lon);
+
+  const h = Math.sin(dLat/2) ** 2 +
+    Math.cos(radians(a.lat)) * Math.cos(radians(b.lat)) *
+    Math.sin(dLon/2) ** 2;
+
+  return 6371 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1-h));
 }
 
-function exportFacilities(){
-  if(!validSelection()){status("mapStatus","Select an administrative area first.","error");return}
-  downloadCSV("GBoS_GEOAI_Facilities.csv",visibleFacilities().map(f=>({
-    name:f.name,category:f.category,latitude:f.lat,longitude:f.lon,
-    administrative_level:activeAdminLevel,administrative_area:activeAdminValue,
-    osm_id:f.id,source:"OpenStreetMap"
+function analyseProximity() {
+  if (!validSelection()) {
+    $("radiusText").textContent = "Select an administrative area first.";
+    return;
+  }
+
+  const radius = Number($("radius").value);
+
+  if (!Number.isFinite(radius) || radius <= 0) {
+    $("radiusText").textContent = "Enter a positive radius in kilometres.";
+    return;
+  }
+
+  const facilities = visibleFacilities();
+  const eas = selectedEAs();
+
+  if (!facilities.length) {
+    $("radiusText").textContent =
+      "No mapped facilities are available for this selection.";
+    return;
+  }
+
+  let covered = 0;
+  let distanceSum = 0;
+
+  eas.forEach(feature => {
+    const bounds = L.geoJSON(feature).getBounds();
+    const centre = bounds.getCenter();
+
+    let nearest = Infinity;
+
+    facilities.forEach(facility => {
+      nearest = Math.min(
+        nearest,
+        haversine(
+          {lat:centre.lat, lon:centre.lng},
+          {lat:facility.lat, lon:facility.lon}
+        )
+      );
+    });
+
+    distanceSum += nearest;
+    if (nearest <= radius) covered++;
+  });
+
+  const percentage = eas.length ? covered / eas.length * 100 : 0;
+
+  $("radiusText").textContent =
+    covered + " of " + eas.length + " EA centroids (" +
+    percentage.toFixed(1) + "%) are within " + radius +
+    " km straight-line distance of a mapped facility. " +
+    "Mean nearest-facility distance: " +
+    (distanceSum / eas.length).toFixed(2) +
+    " km. This is a centroid-based screening proxy, not road-network accessibility.";
+}
+
+/* CSV exports */
+function downloadCSV(filename, rows) {
+  if (!rows.length) {
+    status("mapStatus", "There are no records available to export.", "error");
+    return;
+  }
+
+  const keys = [...new Set(rows.flatMap(row => Object.keys(row)))];
+  const quote = value => '"' + String(value ?? "").replace(/"/g, '""') + '"';
+
+  const csv = [
+    keys.map(quote).join(","),
+    ...rows.map(row => keys.map(key => quote(row[key])).join(","))
+  ].join("\r\n");
+
+  const blob = new Blob(["\ufeff" + csv], {
+    type:"text/csv;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportFacilities() {
+  if (!validSelection()) {
+    status("mapStatus", "Select an administrative area first.", "error");
+    return;
+  }
+
+  downloadCSV("GBoS_GEOAI_Facilities.csv", visibleFacilities().map(f => ({
+    name:f.name,
+    category:f.category,
+    latitude:f.lat,
+    longitude:f.lon,
+    administrative_level:activeAdminLevel,
+    administrative_area:activeAdminValue,
+    osm_id:f.id,
+    source:"OpenStreetMap"
   })));
 }
 
-function exportEAs(){
-  if(!validSelection()){status("mapStatus","Select an administrative area first.","error");return}
-  downloadCSV("GBoS_GEOAI_Selected_EAs.csv",selectedEAs().map((f,i)=>({
-    EA_number:i+1,lga:admin(f,"lga"),district:admin(f,"district"),ward:admin(f,"ward"),
-    population:pop(f),population_field:populationField()
+function exportEAs() {
+  if (!validSelection()) {
+    status("mapStatus", "Select an administrative area first.", "error");
+    return;
+  }
+
+  downloadCSV("GBoS_GEOAI_Selected_EAs.csv", selectedEAs().map((f,i) => ({
+    EA_number:i+1,
+    lga:admin(f,"lga"),
+    district:admin(f,"district"),
+    ward:admin(f,"ward"),
+    population:population(f),
+    population_field:populationField()
   })));
 }
 
-function exportSummary(){
-  if(!validSelection()){status("mapStatus","Select an administrative area first.","error");return}
-  const fs=visibleFacilities(),es=selectedEAs();
-  const values=es.map(pop).filter(v=>v!==null);
-  const total=values.reduce((a,b)=>a+b,0);
-  downloadCSV("GBoS_GEOAI_Summary.csv",[{
-    administrative_level:activeAdminLevel,administrative_area:activeAdminValue,
-    selected_EAs:es.length,population_field:populationField(),
-    summed_population:values.length?total:"",facilities:fs.length,
-    hospitals:fs.filter(f=>f.category==="hospital").length,
-    clinics:fs.filter(f=>f.category==="clinic").length,
-    doctors:fs.filter(f=>f.category==="doctor").length,
-    pharmacies:fs.filter(f=>f.category==="pharmacy").length,
-    dental:fs.filter(f=>f.category==="dentist").length,
-    other:fs.filter(f=>f.category==="other").length,
-    note:"Screening result; not an official healthcare coverage measure."
+function exportSummary() {
+  if (!validSelection()) {
+    status("mapStatus", "Select an administrative area first.", "error");
+    return;
+  }
+
+  const facilities = visibleFacilities();
+  const eas = selectedEAs();
+  const values = eas.map(population).filter(v => v !== null);
+  const total = values.reduce((sum,v) => sum+v,0);
+
+  downloadCSV("GBoS_GEOAI_Summary.csv", [{
+    administrative_level:activeAdminLevel,
+    administrative_area:activeAdminValue,
+    selected_EAs:eas.length,
+    population_field:populationField(),
+    summed_population:values.length ? total : "",
+    facilities:facilities.length,
+    hospitals:facilities.filter(f => f.category==="hospital").length,
+    clinics:facilities.filter(f => f.category==="clinic").length,
+    doctors:facilities.filter(f => f.category==="doctor").length,
+    pharmacies:facilities.filter(f => f.category==="pharmacy").length,
+    dental:facilities.filter(f => f.category==="dentist").length,
+    other:facilities.filter(f => f.category==="other").length,
+    note:"Geospatial screening result; not an official healthcare coverage measure."
   }]);
 }
 
-function resetApp(){
-  $("lgaFilter").value="";
-  fillSelect("districtFilter",[],"Select an LGA first");
-  fillSelect("wardFilter",[],"Select a district first");
-  $("districtFilter").disabled=true;$("wardFilter").disabled=true;
-  $("facilityType").value="all";$("facilitySearch").value="";
-  $("populationField").value="auto";
-  $("showEAs").checked=true;$("showPopulation").checked=false;$("showFacilities").checked=true;
-  activeAdminLevel="";activeAdminValue="";
+/* Clear and reset */
+function clearEAData() {
   clearRoute();
-  if(radiusLayer){map.removeLayer(radiusLayer);radiusLayer=null}
-  status("adminStatus","Select an LGA, district, or ward. Facilities remain hidden until selection.");
-  $("radiusText").textContent="Proximity analysis has not been run.";
-  refresh();fitAllEAs();
+
+  eaFeatures = [];
+  allFacilities = [];
+  facilitiesLoaded = false;
+  activeAdminLevel = "";
+  activeAdminValue = "";
+
+  eaLayer.clearLayers();
+  selectionLayer.clearLayers();
+  facilityLayer.clearLayers();
+
+  populateLGAs();
+  fillSelect("lgaFilter", [], "Load EA data first");
+  fillSelect("districtFilter", [], "Select an LGA first");
+  fillSelect("wardFilter", [], "Select a district first");
+
+  $("districtFilter").disabled = true;
+  $("wardFilter").disabled = true;
+
+  $("eaFile").value = "";
+  $("eaFileName").textContent = "No local file selected.";
+  $("chooseFileText").textContent = "Choose GeoJSON file";
+
+  updateFacilityDropdowns([]);
+  refresh();
+
+  status("eaLoadStatus", "EA data cleared. Choose a new file or URL.");
+  status("adminStatus", "Load EA data before selecting an administrative area.");
+  status("mapStatus", "EA data cleared.");
 }
 
-/* Event bindings */
-$("lgaFilter").addEventListener("change",onLgaChange);
-$("districtFilter").addEventListener("change",onDistrictChange);
-$("wardFilter").addEventListener("change",applyAdminFilters);
-$("applyFilters").addEventListener("click",applyAdminFilters);
-$("populationField").addEventListener("change",refresh);
-$("facilityType").addEventListener("change",refresh);
-$("facilitySearch").addEventListener("input",refresh);
-$("showEAs").addEventListener("change",refresh);
-$("showPopulation").addEventListener("change",refresh);
-$("showFacilities").addEventListener("change",refresh);
-$("basemap").addEventListener("change",e=>setBasemap(e.target.value));
-$("loadFacilities").addEventListener("click",loadFacilities);
-$("makeRoute").addEventListener("click",route);
-$("clearRoute").addEventListener("click",clearRoute);
-$("analyseRadius").addEventListener("click",analyseProximity);
-$("zoomSelected").addEventListener("click",zoomSelected);
-$("fitGambia").addEventListener("click",fitAllEAs);
-$("exportFacilities").addEventListener("click",exportFacilities);
-$("exportEAs").addEventListener("click",exportEAs);
-$("exportSummary").addEventListener("click",exportSummary);
-$("reset").addEventListener("click",resetApp);
+function resetFilters() {
+  $("lgaFilter").value = "";
+  fillSelect("districtFilter", [], "Select an LGA first");
+  fillSelect("wardFilter", [], "Select a district first");
 
-$("loadEA").addEventListener("click",async()=>{
-  try{
-    status("mapStatus","Loading EA GeoJSON...");
+  $("districtFilter").disabled = true;
+  $("wardFilter").disabled = true;
+
+  $("facilityType").value = "all";
+  $("facilitySearch").value = "";
+  $("populationField").value = "auto";
+
+  $("showEAs").checked = true;
+  $("showPopulation").checked = false;
+  $("showFacilities").checked = true;
+
+  activeAdminLevel = "";
+  activeAdminValue = "";
+
+  clearRoute();
+  $("radiusText").textContent = "Proximity analysis has not been run.";
+
+  refresh();
+  fitAllEAs();
+
+  status("adminStatus", "Filters reset. Select an LGA, district, or ward.");
+}
+
+/* Event listeners */
+$("loadEA").addEventListener("click", async () => {
+  try {
     await loadEAURL();
-  }catch(e){
-    status("mapStatus","EA loading failed: "+e.message,"error");
-    status("adminStatus","Check the file path, hosting location, and GeoJSON properties.","error");
+  } catch (error) {
+    status("eaLoadStatus", "URL loading failed: " + error.message, "error");
+    status("mapStatus", "Could not load the EA GeoJSON URL.", "error");
   }
 });
 
-$("eaFile").addEventListener("change",async e=>{
-  const file=e.target.files?.[0];if(!file)return;
-  try{await loadEAFile(file)}
-  catch(err){status("mapStatus","Local GeoJSON error: "+err.message,"error")}
+$("eaFile").addEventListener("change", async event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  await loadEAFile(file);
 });
 
+$("lgaFilter").addEventListener("change", onLgaChange);
+$("districtFilter").addEventListener("change", onDistrictChange);
+$("wardFilter").addEventListener("change", applyAdminFilters);
+$("applyFilters").addEventListener("click", applyAdminFilters);
+$("reset").addEventListener("click", resetFilters);
+$("clearEA").addEventListener("click", clearEAData);
+
+$("populationField").addEventListener("change", refresh);
+$("facilityType").addEventListener("change", refresh);
+$("facilitySearch").addEventListener("input", refresh);
+
+$("showEAs").addEventListener("change", refresh);
+$("showPopulation").addEventListener("change", refresh);
+$("showFacilities").addEventListener("change", refresh);
+
+$("basemap").addEventListener("change", event => setBasemap(event.target.value));
+$("loadFacilities").addEventListener("click", loadFacilities);
+
+$("makeRoute").addEventListener("click", calculateRoute);
+$("clearRoute").addEventListener("click", clearRoute);
+$("analyseRadius").addEventListener("click", analyseProximity);
+
+$("zoomSelected").addEventListener("click", zoomSelected);
+$("fitGambia").addEventListener("click", fitAllEAs);
+
+$("exportFacilities").addEventListener("click", exportFacilities);
+$("exportEAs").addEventListener("click", exportEAs);
+$("exportSummary").addEventListener("click", exportSummary);
+
+/* Initial state */
+populateLGAs();
 refresh();
-status("adminStatus","Load EA boundaries, select an LGA, district, or ward, then load facilities.");
-status("mapStatus","No facilities are displayed until EA boundaries and an administrative selection are available.");
+
+status("eaLoadStatus", "Choose a local GeoJSON file or load a hosted URL.");
+status("adminStatus", "Load EA data, then select an LGA, district, or ward.");
+status("mapStatus", "Waiting for EA geographic data.");
 </script>
 </body>
 </html>
-
