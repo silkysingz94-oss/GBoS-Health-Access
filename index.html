@@ -3,399 +3,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GBoS GEOAI | Healthcare Accessibility & Population</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBoS GEOAI | Hospital Accessibility Intelligence</title>
 
-<link rel="stylesheet"
- href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-:root {
-  --navy: #12304a;
-  --blue: #1769aa;
-  --border: #dce4ed;
-  --muted: #65758a;
-  --panel: #ffffff;
-  --background: #f3f6fa;
+:root{
+  --navy:#102b46;--blue:#1769aa;--teal:#008c82;
+  --bg:#f3f6fa;--border:#dce4ec;--muted:#637386;
+  --red:#d94848;--green:#21845b;
 }
-* { box-sizing: border-box; }
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #1d2939;
-  background: var(--background);
-}
-button, input, select { font: inherit; }
-button {
-  cursor: pointer;
-  border: 0;
-  border-radius: 5px;
-  padding: 8px 10px;
-  background: var(--blue);
-  color: white;
-  font-weight: 600;
-}
-button.secondary {
-  background: #e8eef5;
-  color: #20364c;
-  border: 1px solid var(--border);
-}
-button.danger { background: #b42318; }
-button:disabled { opacity: .5; cursor: wait; }
-.topbar {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 0 14px;
-  background: var(--navy);
-  color: white;
-}
-.brand { font-size: 14px; font-weight: 700; }
-.brand small {
-  display: block;
-  margin-top: 2px;
-  font-size: 10px;
-  font-weight: 400;
-  opacity: .85;
-}
-.topbar-right { font-size: 10px; text-align: right; }
-.app {
-  display: grid;
-  grid-template-columns: 245px minmax(0, 1fr) 245px;
-  gap: 7px;
-  height: calc(100vh - 76px);
-  padding: 7px;
-}
-.panel {
-  min-width: 0;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 10px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-}
-.panel h2 {
-  font-size: 13px;
-  margin: 2px 0 9px;
-  color: var(--navy);
-}
-.panel h3 {
-  font-size: 11px;
-  margin: 12px 0 6px;
-  color: #344054;
-}
-.section {
-  border-bottom: 1px solid #edf0f4;
-  padding-bottom: 9px;
-  margin-bottom: 9px;
-}
-label {
-  display: block;
-  font-size: 10px;
-  color: #475467;
-  margin: 7px 0 4px;
-}
-input, select {
-  width: 100%;
-  min-width: 0;
-  border: 1px solid #cfd8e3;
-  border-radius: 5px;
-  background: #fff;
-  color: #1d2939;
-  padding: 7px;
-  font-size: 11px;
-}
-input[type="checkbox"] { width: auto; }
-.inline {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-.inline > * { min-width: 0; flex: 1; }
-.actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  margin-top: 8px;
-}
-.small-note {
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.4;
-}
-.map-panel {
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-}
-.map-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-  padding: 5px 7px;
-  border-bottom: 1px solid var(--border);
-  font-size: 10px;
-}
-.map-toolbar select { width: auto; max-width: 180px; }
-#map {
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  background: #e8edf1;
-}
-.map-instructions {
-  padding: 5px 8px;
-  font-size: 10px;
-  line-height: 1.25;
-  color: #475467;
-  background: #fff;
-  border-top: 1px solid var(--border);
-}
-.footer {
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 12px;
-  font-size: 9px;
-  color: #526173;
-  background: white;
-  border-top: 1px solid var(--border);
-}
-.footer strong { color: var(--navy); }
-.status {
-  font-size: 10px;
-  line-height: 1.4;
-  padding: 7px;
-  background: #f3f6fa;
-  border-radius: 5px;
-  overflow-wrap: anywhere;
-}
-.status.error { color: #b42318; background: #fff1f0; }
-.status.success { color: #067647; background: #ecfdf3; }
-.kpis {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-.kpi {
-  border: 1px solid #e1e7ef;
-  border-radius: 6px;
-  padding: 8px;
-  min-width: 0;
-  background: #fbfcfe;
-}
-.kpi .value {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--navy);
-  overflow-wrap: anywhere;
-}
-.kpi .label {
-  margin-top: 3px;
-  font-size: 9px;
-  color: var(--muted);
-  line-height: 1.3;
-}
-.bar-row { margin: 7px 0; }
-.bar-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 5px;
-  font-size: 10px;
-  margin-bottom: 3px;
-}
-.bar-track {
-  height: 6px;
-  border-radius: 4px;
-  background: #e8edf3;
-  overflow: hidden;
-}
-.bar-fill { height: 100%; background: #2781bd; }
-.legend-box {
-  position: absolute;
-  z-index: 500;
-  bottom: 12px;
-  max-width: 175px;
-  padding: 7px 9px;
-  border-radius: 6px;
-  background: rgba(255,255,255,.96);
-  border: 1px solid #d7dfe8;
-  box-shadow: 0 1px 5px #0002;
-  font-size: 10px;
-  line-height: 1.25;
-  pointer-events: auto;
-}
-#facilityLegend { left: 10px; }
-#populationLegend { right: 10px; }
-.legend-title {
-  font-size: 10px;
-  font-weight: 700;
-  margin-bottom: 5px;
-  color: var(--navy);
-}
-.legend-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin: 3px 0;
-}
-.symbol {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  color: white;
-  font-size: 9px;
-  font-weight: 700;
-  border: 1px solid #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px #667085;
-}
-.pop-swatch {
-  width: 15px;
-  height: 10px;
-  flex: 0 0 15px;
-  border: 1px solid #ffffff;
-}
-.leaflet-control-layers {
-  font-size: 10px;
-}
-.leaflet-popup-content { font-size: 11px; line-height: 1.45; }
-hr { border: 0; border-top: 1px solid #e5eaf0; margin: 9px 0; }
-@media (max-width: 1050px) {
-  .app { grid-template-columns: 205px minmax(0,1fr); }
-  #analyticsPanel { display: none; }
-}
-@media (max-width: 650px) {
-  html, body { height: auto; min-height: 100%; overflow: auto; }
-  .topbar { height: auto; min-height: 48px; }
-  .app { display: flex; flex-direction: column; height: auto; }
-  .panel { max-height: 34vh; }
-  .map-panel { height: 68vh; min-height: 420px; }
-  #analyticsPanel { display: block; }
-  .footer { height: auto; min-height: 28px; flex-wrap: wrap; padding: 6px; }
-  .legend-box { max-width: 145px; font-size: 9px; }
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:Arial,Helvetica,sans-serif;color:#203248;background:var(--bg)}
+body{overflow:hidden}
+header{height:62px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:12px}
+.brand{font-weight:800;font-size:18px;letter-spacing:.3px}
+.brand small{display:block;font-size:10px;color:#b8d1e5;letter-spacing:1.5px;margin-top:3px}
+.header-right{font-size:11px;text-align:right;color:#d6e4ef}
+main{height:calc(100% - 62px);display:grid;grid-template-columns:minmax(245px,1fr) minmax(300px,1fr) minmax(265px,1fr);gap:9px;padding:9px}
+.panel,.map-panel{min-width:0;min-height:0;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.panel{display:flex;flex-direction:column}
+.panel-title{padding:13px 14px;background:#fff;border-bottom:1px solid var(--border);font-weight:800;color:var(--navy);font-size:14px}
+.panel-content{padding:12px;overflow-y:auto;min-height:0;flex:1}
+.section{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#53667b;margin:5px 0 9px}
+label{display:block;font-size:12px;font-weight:700;margin:10px 0 5px;color:#34495e}
+input,select,button{font:inherit}
+input,select{width:100%;padding:9px;border:1px solid #cbd6e1;border-radius:6px;background:#fff;color:#23384d;font-size:12px}
+button{border:0;border-radius:6px;padding:10px 11px;cursor:pointer;font-size:12px;font-weight:700}
+button:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:white}
+.btn-teal{background:var(--teal);color:white}
+.btn-light{background:#eaf1f7;color:#28435c;border:1px solid #d8e3ed}
+.btn-red{background:#fff0f0;color:#a92f2f;border:1px solid #f0caca}
+.button-row{display:flex;gap:7px;margin-top:9px}
+.button-row>*{flex:1}
+.note{font-size:11px;line-height:1.5;color:var(--muted);margin:9px 0}
+.status{padding:9px 10px;border-radius:6px;background:#eef5fa;color:#31536e;font-size:11px;line-height:1.5;margin:10px 0;overflow-wrap:anywhere}
+.status.error{background:#fff0f0;color:#a92f2f}
+.status.success{background:#eaf8f0;color:#216b46}
+.checkline{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0}
+.checkline input{width:auto}
+.map-panel{display:flex;flex-direction:column;position:relative}
+.map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:8px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.map-toolbar select{width:auto;flex:1;min-width:110px}
+.map-toolbar button{padding:8px}
+#map{flex:1;min-height:0;width:100%;background:#e7edf1}
+.map-bottom{padding:8px 10px;border-top:1px solid var(--border);font-size:10px;color:#5b6e80;line-height:1.45}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{padding:11px;background:#f3f7fb;border:1px solid #e1eaf2;border-radius:8px;min-width:0}
+.kpi .value{font-size:23px;font-weight:800;color:var(--navy);overflow-wrap:anywhere}
+.kpi .label{font-size:10px;color:#64758a;line-height:1.4;margin-top:5px}
+.kpi.alert .value{color:var(--red)}
+.kpi.good .value{color:var(--green)}
+hr{border:0;border-top:1px solid #e5ebf1;margin:14px 0}
+.facility-list{display:flex;flex-direction:column;gap:7px}
+.facility-card{border:1px solid #dce5ee;border-radius:7px;padding:9px;cursor:pointer}
+.facility-card:hover{border-color:var(--blue);background:#f7fbff}
+.facility-card strong{display:block;font-size:12px;color:#203d58}
+.facility-card small{display:block;font-size:10px;color:#68798b;margin-top:4px;line-height:1.5}
+.tag{display:inline-block;background:#e8f2fb;color:#205780;border-radius:4px;padding:3px 5px;font-size:9px;margin-top:5px}
+.route-step{font-size:11px;padding:7px 0;border-bottom:1px solid #edf1f5;line-height:1.5}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:#53667b}
+.legend span{display:flex;gap:5px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid white;box-shadow:0 0 1px #333}
+footer{font-size:10px;color:#748396;line-height:1.5}
+.leaflet-popup-content{font-size:12px;line-height:1.55}
+@media(max-width:900px){
+ body{overflow:auto}
+ header{height:auto;min-height:60px;padding:10px 12px}
+ main{height:auto;min-height:calc(100% - 60px);grid-template-columns:1fr;padding:7px}
+ .panel{min-height:250px}
+ .map-panel{height:65vh;min-height:400px;grid-row:1}
+ .panel-content{max-height:500px}
 }
 </style>
 </head>
 
 <body>
-<header class="topbar">
-  <div class="brand">
-    GBoS GEOAI
-    <small>Healthcare Facility Accessibility & EA Population Intelligence</small>
-  </div>
-  <div class="topbar-right">
-    GIS / Cartography Unit<br>
-    The Gambia
-  </div>
+<header>
+  <div class="brand">🇬🇲 GBoS GEOAI <small>HOSPITAL ACCESSIBILITY INTELLIGENCE</small></div>
+  <div class="header-right">THE GAMBIA<br>Healthcare access screening</div>
 </header>
 
-<main class="app">
-  <aside class="panel" id="controlsPanel">
-    <h2>Controls & analysis</h2>
-
-    <div class="section">
-      <h3>Healthcare facilities</h3>
+<main>
+  <!-- LEFT: CONTROLS -->
+  <section class="panel">
+    <div class="panel-title">Access analysis & controls</div>
+    <div class="panel-content">
+      <div class="section">1 · Healthcare facilities</div>
       <label for="facilityType">Facility type</label>
       <select id="facilityType">
-        <option value="all">All healthcare facilities</option>
-        <option value="hospital">Hospital</option>
-        <option value="clinic">Clinic / health centre</option>
-        <option value="doctor">Doctor / medical practice</option>
-        <option value="pharmacy">Pharmacy</option>
-        <option value="dental">Dental facility</option>
-        <option value="other">Other healthcare</option>
+        <option value="all">All mapped health facilities</option>
+        <option value="hospital">Hospitals</option>
+        <option value="clinic">Clinics / health centres</option>
+        <option value="doctors">Doctors / medical practices</option>
+        <option value="pharmacy">Pharmacies</option>
       </select>
-      <label for="facilitySearch">Find facility or community</label>
-      <input id="facilitySearch" list="facilitySuggestions"
-             placeholder="Type a facility or place name">
-      <datalist id="facilitySuggestions"></datalist>
-      <div class="actions">
-        <button id="loadFacilitiesBtn">Load facilities</button>
-        <button class="secondary" id="clearSearchBtn">Clear search</button>
+      <label for="searchName">Search facility or community</label>
+      <input id="searchName" placeholder="e.g. Banjul, hospital name">
+      <div class="button-row">
+        <button class="btn-primary" id="loadFacilities">Load facilities</button>
+        <button class="btn-light" id="locateMe">My location</button>
       </div>
-      <p class="small-note">Facility locations are discovered from OpenStreetMap. Coverage depends on mapped data completeness.</p>
-    </div>
+      <div id="loadStatus" class="status">Ready. Load mapped facilities to begin. Internet access is required.</div>
 
-    <div class="section">
-      <h3>Starting point</h3>
-      <label for="startChoice">Choose starting point</label>
-      <select id="startChoice">
-        <option value="gps" selected>Current GPS location</option>
-        <option value="map">Choose on map</option>
-        <option value="facility">Select mapped facility</option>
-        <option value="place">Search community / place</option>
-      </select>
-      <label for="startFacility">Starting facility</label>
-      <select id="startFacility">
-        <option value="">Choose a facility</option>
-      </select>
-      <label for="startPlace">Starting community or place</label>
-      <input id="startPlace" list="placeSuggestions"
-             placeholder="e.g. Brikama, Banjul">
-      <datalist id="placeSuggestions"></datalist>
-      <div class="actions">
-        <button class="secondary" id="gpsStartBtn">Use GPS</button>
-        <button class="secondary" id="pickStartBtn">Pick on map</button>
+      <hr>
+      <div class="section">2 · Set your starting location</div>
+      <label for="originName">Starting community / place</label>
+      <input id="originName" placeholder="e.g. Brikama, Basse, Banjul">
+      <div class="button-row">
+        <button class="btn-teal" id="findPlace">Find place</button>
+        <button class="btn-light" id="mapOrigin">Click map to set origin</button>
       </div>
-    </div>
+      <p class="note">You can also click anywhere on the map to set a starting point. Place search uses OpenStreetMap geocoding.</p>
+      <div id="originStatus" class="status">Starting location not set.</div>
 
-    <div class="section">
-      <h3>Destination</h3>
-      <label for="destChoice">Choose destination</label>
-      <select id="destChoice">
-        <option value="facility" selected>Mapped healthcare facility</option>
-        <option value="place">Search community / place</option>
-        <option value="gps">Current GPS location</option>
-        <option value="map">Choose on map</option>
+      <hr>
+      <div class="section">3 · Calculate accessibility</div>
+      <label for="travelMode">Road travel mode</label>
+      <select id="travelMode">
+        <option value="driving">Car / road route</option>
       </select>
-      <label for="destFacility">Destination facility</label>
-      <select id="destFacility">
-        <option value="">Choose a facility</option>
+      <label for="speed">Estimated average travel speed</label>
+      <select id="speed">
+        <option value="20">20 km/h — slow / local roads</option>
+        <option value="30" selected>30 km/h — illustrative average</option>
+        <option value="40">40 km/h — faster roads</option>
+        <option value="50">50 km/h — high-speed assumption</option>
       </select>
-      <label for="destPlace">Destination community or place</label>
-      <input id="destPlace" list="placeSuggestions"
-             placeholder="Enter a place name">
-      <div class="actions">
-        <button class="secondary" id="gpsDestBtn">Use GPS</button>
-        <button class="secondary" id="pickDestBtn">Pick on map</button>
-      </div>
-      <label for="routeSpeed">Fallback average speed (km/h)</label>
-      <select id="routeSpeed">
-        <option value="20">20 km/h — slow/local</option>
-        <option value="30" selected>30 km/h — general</option>
-        <option value="40">40 km/h — faster</option>
-        <option value="60">60 km/h — highway-like</option>
-      </select>
-      <div class="actions">
-        <button id="analyseBtn">Analyse access</button>
-        <button class="secondary" id="resetBtn">Reset</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>Accessibility screening</h3>
-      <label for="radius">Straight-line screening radius</label>
+      <label for="radius">Straight-line access screening distance</label>
       <select id="radius">
         <option value="5">5 km</option>
         <option value="10" selected>10 km</option>
@@ -403,1162 +141,564 @@ hr { border: 0; border-top: 1px solid #e5eaf0; margin: 9px 0; }
         <option value="25">25 km</option>
         <option value="50">50 km</option>
       </select>
-      <p class="small-note">Radius screening is not a road-network catchment or a measure of actual service availability.</p>
-    </div>
-
-    <div class="section">
-      <h3>Administrative filters</h3>
-      <label for="lgaFilter">LGA / region</label>
-      <select id="lgaFilter"><option value="">All LGAs</option></select>
-      <label for="districtFilter">District</label>
-      <select id="districtFilter"><option value="">All districts</option></select>
-      <label for="wardFilter">Ward</label>
-      <select id="wardFilter"><option value="">All wards</option></select>
-      <label for="populationField">EA population field</label>
-      <select id="populationField">
-        <option value="map_pop">map_pop</option>
-        <option value="ls_pop">ls_pop</option>
-        <option value="enum_pop">enum_pop</option>
-        <option value="auto">Auto-detect population field</option>
-      </select>
-      <button class="secondary" id="applyFiltersBtn" style="width:100%;margin-top:8px">
-        Apply filters
-      </button>
-    </div>
-
-    <div class="section">
-      <h3>Map layers</h3>
-      <label><input type="checkbox" id="showFacilities" checked> Healthcare facilities</label>
-      <label><input type="checkbox" id="showEA" checked> EA population polygons</label>
-      <label><input type="checkbox" id="showRoute" checked> Route</label>
-      <label><input type="checkbox" id="showRadius" checked> Distance screening circle</label>
-      <label><input type="checkbox" id="showStart" checked> Starting point</label>
-      <label><input type="checkbox" id="showDestination" checked> Destination</label>
-      <div class="actions">
-        <button class="secondary" id="fitResultsBtn">Fit results</button>
-        <button class="secondary" id="refreshMapBtn">Refresh map</button>
+      <div class="button-row">
+        <button class="btn-primary" id="analyse">Analyse nearest facility</button>
+        <button class="btn-light" id="clear">Reset</button>
       </div>
-    </div>
+      <p class="note">Travel time is estimated from a road-routing service when available. The average-speed selector is a fallback only and does not model traffic, waiting, road closures or ambulance response.</p>
 
-    <div class="section">
-      <h3>Export data</h3>
-      <div class="actions">
-        <button id="exportFacilitiesBtn">Facilities CSV</button>
-        <button id="exportAccessBtn">Access CSV</button>
+      <hr>
+      <div class="section">Map layers</div>
+      <label class="checkline"><input type="checkbox" id="showRings" checked> Show distance screening circles</label>
+      <label class="checkline"><input type="checkbox" id="showRoutes" checked> Show calculated route</label>
+      <label class="checkline"><input type="checkbox" id="showFacilities" checked> Show facility markers</label>
+      <label class="checkline"><input type="checkbox" id="showOrigin" checked> Show starting location</label>
+      <div class="button-row">
+        <button class="btn-light" id="fitAll">Fit map to results</button>
+        <button class="btn-light" id="exportCSV">Export facilities CSV</button>
       </div>
-      <button class="secondary" id="exportEABtn" style="width:100%;margin-top:5px">
-        EA population CSV
-      </button>
-    </div>
-
-    <div id="mainStatus" class="status">Ready. Load facilities and EA population data.</div>
-  </aside>
-
-  <section class="map-panel">
-    <div class="map-toolbar">
-      <strong>Interactive accessibility map</strong>
-      <select id="basemap">
-        <option value="street">Street map</option>
-        <option value="satellite">Satellite imagery</option>
-        <option value="hybrid">Hybrid imagery</option>
-        <option value="terrain">Terrain</option>
-        <option value="dark">Dark basemap</option>
-      </select>
-    </div>
-
-    <div id="map"></div>
-
-    <div class="map-instructions" id="mapInstructions">
-      Choose “Choose on map” for the start or destination, then click the map.
-    </div>
-
-    <div class="legend-box" id="facilityLegend">
-      <div class="legend-title">Healthcare facility symbology</div>
-      <div class="legend-row"><span class="symbol" style="background:#c62828">H</span> Hospital</div>
-      <div class="legend-row"><span class="symbol" style="background:#168447">+</span> Clinic / health centre</div>
-      <div class="legend-row"><span class="symbol" style="background:#1565c0">D</span> Doctor / medical practice</div>
-      <div class="legend-row"><span class="symbol" style="background:#7b1fa2">P</span> Pharmacy</div>
-      <div class="legend-row"><span class="symbol" style="background:#ef6c00">T</span> Dental facility</div>
-      <div class="legend-row"><span class="symbol" style="background:#546e7a">+</span> Other healthcare</div>
-      <div class="legend-row"><span class="symbol" style="background:#111827">S</span> Starting point</div>
-      <div class="legend-row"><span class="symbol" style="background:#f9a825;color:#222">D</span> Destination</div>
-    </div>
-
-    <div class="legend-box" id="populationLegend">
-      <div class="legend-title">EA population · map_pop</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#ffffcc"></span> Very low</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#ffeda0"></span> Low</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#fed976"></span> Moderate</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#feb24c"></span> Elevated</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#fd8d3c"></span> High</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#f03b20"></span> Very high</div>
-      <div class="legend-row"><span class="pop-swatch" style="background:#bd0026"></span> Highest</div>
     </div>
   </section>
 
-  <aside class="panel" id="analyticsPanel">
-    <h2>Analytics & results</h2>
-    <div class="kpis">
-      <div class="kpi"><div class="value" id="facilityCount">0</div><div class="label">Mapped facilities in filter</div></div>
-      <div class="kpi"><div class="value" id="eaCount">0</div><div class="label">Visible enumeration areas</div></div>
-      <div class="kpi"><div class="value" id="populationTotal">—</div><div class="label">EA population total</div></div>
-      <div class="kpi"><div class="value" id="withinRadius">—</div><div class="label">Facilities within radius</div></div>
+  <!-- CENTER: MAP -->
+  <section class="map-panel">
+    <div class="map-toolbar">
+      <select id="basemap" aria-label="Basemap">
+        <option value="street">Street map</option>
+        <option value="satellite">Satellite imagery</option>
+        <option value="terrain">Terrain</option>
+        <option value="dark">Dark map</option>
+      </select>
+      <button id="gambiaView" class="btn-light">🇬🇲 The Gambia</button>
     </div>
+    <div id="map"></div>
+    <div class="map-bottom">
+      <div class="legend">
+        <span><i class="dot" style="background:#c43e4c"></i> Hospital</span>
+        <span><i class="dot" style="background:#178a82"></i> Clinic / health centre</span>
+        <span><i class="dot" style="background:#276bc0"></i> Other health facility</span>
+        <span><i class="dot" style="background:#e89a27"></i> Starting point</span>
+        <span><i class="dot" style="background:#7e57c2"></i> Route</span>
+      </div>
+      <div style="margin-top:5px">Distance circles represent straight-line distance, not actual travel catchments.</div>
+    </div>
+  </section>
 
-    <hr>
-    <h3>Selected journey</h3>
-    <div class="status" id="routeSummary">Choose a starting point and destination, then analyse access.</div>
-    <hr>
-    <h3>Facility types</h3>
-    <div id="typeSummary" class="small-note">Facility statistics will appear here.</div>
-    <hr>
-    <h3>EA population distribution</h3>
-    <div id="populationSummary" class="small-note">Load EA data to calculate population summaries.</div>
-    <hr>
-    <h3>Data & methodology</h3>
-    <div class="small-note">
-      <strong>Facility sources:</strong> OpenStreetMap via Overpass API.<br><br>
-      <strong>Routing:</strong> OSRM driving route service when available. Fallback estimates use straight-line distance and the selected average speed.<br><br>
-      <strong>Population:</strong> EA GeoJSON population attributes. The population total is the sum of the selected field for currently visible EAs.<br><br>
-      <strong>Accessibility:</strong> Distance-circle results are geographic screening estimates. They do not prove road access, facility capacity, service quality or operational status.<br><br>
-      <strong>Limitations:</strong> OpenStreetMap coverage may be incomplete. Validate facility inventories and population attributes against authoritative GBoS and health-sector records before operational use.
+  <!-- RIGHT: ANALYTICS -->
+  <section class="panel">
+    <div class="panel-title">Healthcare access intelligence</div>
+    <div class="panel-content">
+      <div class="section">National mapped inventory</div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="value" id="kFacilities">—</div><div class="label">Mapped facilities loaded</div></div>
+        <div class="kpi"><div class="value" id="kHospitals">—</div><div class="label">Hospital-tagged facilities</div></div>
+        <div class="kpi"><div class="value" id="kNearest">—</div><div class="label">Nearest facility, straight-line km</div></div>
+        <div class="kpi"><div class="value" id="kTime">—</div><div class="label">Estimated road travel time</div></div>
+      </div>
+
+      <hr>
+      <div class="section">Nearest facility result</div>
+      <div id="nearestResult" class="status">Set a starting point, load facilities and run the analysis.</div>
+      <div class="button-row">
+        <button id="routeNearest" class="btn-primary" disabled>Route to nearest</button>
+        <button id="routeSelected" class="btn-light" disabled>Route to selected</button>
+      </div>
+
+      <hr>
+      <div class="section">Facilities near your origin</div>
+      <label for="listLimit">Number of results</label>
+      <select id="listLimit">
+        <option value="5">Top 5</option>
+        <option value="10" selected>Top 10</option>
+        <option value="20">Top 20</option>
+        <option value="50">Top 50</option>
+      </select>
+      <div id="facilityList" class="facility-list">
+        <p class="note">Facility results will appear here after loading data.</p>
+      </div>
+
+      <hr>
+      <div class="section">Route directions</div>
+      <div id="routeSummary" class="status">No route calculated yet.</div>
+      <div id="directions"><p class="note">Select a starting point and calculate a route.</p></div>
+
+      <hr>
+      <div class="section">How to interpret results</div>
+      <p class="note"><b>Proximity:</b> the nearest facility is selected by straight-line distance, which may not be the facility with the shortest road journey.</p>
+      <p class="note"><b>Access screening:</b> facilities within the selected radius are counted by geographic distance. This is not a population coverage estimate.</p>
+      <p class="note"><b>Data quality:</b> OpenStreetMap may omit facilities, contain outdated records, or lack information on service capability. No facility should be assumed open or able to handle an emergency.</p>
+      <footer>GBoS GEOAI · Research and educational use<br>Produced by Ansu Singhateh · GIS / Cartography Unit, GBoS</footer>
     </div>
-  </aside>
+  </section>
 </main>
 
-<footer class="footer">
-  <span><strong>Produced by Ansu Singhateh</strong> · GIS Analyst | GIS / Cartography Unit | GBoS</span>
-  <span>GBoS GEOAI · Research and educational use · Sources: OpenStreetMap contributors, OSRM, Esri/CARTO</span>
-</footer>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 "use strict";
 
-/* =========================================================
-   GBoS GEOAI — Healthcare Accessibility & EA Population
-   Standalone GitHub Pages application
-   ========================================================= */
+/* ==========================================================
+   GBoS GEOAI — HOSPITAL ACCESSIBILITY INTELLIGENCE
+   Data: OpenStreetMap / Overpass API
+   Geocoding: Nominatim
+   Road routing: OSRM demo service
+   This is a screening prototype, not an emergency service.
+   ========================================================== */
 
 const $ = id => document.getElementById(id);
-const GAMBIA_CENTER = [13.45, -16.58];
-const GAMBIA_BOUNDS = [[13.0, -17.0], [13.9, -13.7]];
+const GAMBIA_BOUNDS = [[13.85,-16.95],[8.0,-13.7]];
+const GAMBIA_CENTER = [13.45,-15.55];
+
+const map = L.map("map",{zoomControl:true}).setView(GAMBIA_CENTER,7);
+
+const basemaps = {
+  street:L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }),
+  satellite:L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
+    maxZoom:19,attribution:"Tiles © Esri"
+  }),
+  terrain:L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",{
+    maxZoom:17,attribution:"© OpenTopoMap contributors"
+  }),
+  dark:L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{
+    maxZoom:19,attribution:"© OpenStreetMap © CARTO"
+  })
+};
+basemaps.street.addTo(map);
+
+const facilityLayer = L.layerGroup().addTo(map);
+const routeLayer = L.layerGroup().addTo(map);
+const ringLayer = L.layerGroup().addTo(map);
+const originLayer = L.layerGroup().addTo(map);
 
 let facilities = [];
-let eaFeatures = [];
-let eaLayer = null;
-let facilityLayer = L.layerGroup();
-let routeLayer = L.layerGroup();
-let radiusLayer = L.layerGroup();
-let pointLayer = L.layerGroup();
-let startPoint = null;
-let destinationPoint = null;
-let startMarker = null;
-let destinationMarker = null;
+let origin = null;
+let selectedFacility = null;
+let nearestFacility = null;
 let routeLine = null;
-let selectionMode = null;
-let lastRoute = null;
-let facilityRequestBusy = false;
-let eaLoadPromise = null;
-let populationRange = [];
-let baseLayers = {};
-let activeBaseLayer = null;
+let routeRequestId = 0;
+let clickToSetOrigin = false;
+let facilityMarkers = [];
+let originMarker = null;
+let routeDestination = null;
 
-const map = L.map("map", { zoomControl: true }).setView(GAMBIA_CENTER, 8);
-
-baseLayers.street = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }
-);
-baseLayers.satellite = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  { maxZoom: 19, attribution: "Imagery &copy; Esri" }
-);
-baseLayers.hybrid = L.layerGroup([
-  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19 }),
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png", { maxZoom: 19, attribution: '&copy; Esri, CARTO' })
-]);
-baseLayers.terrain = L.tileLayer(
-  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-  { maxZoom: 17, attribution: '&copy; OpenStreetMap contributors, SRTM | OpenTopoMap' }
-);
-baseLayers.dark = L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-  { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors, CARTO' }
-);
-activeBaseLayer = baseLayers.street;
-activeBaseLayer.addTo(map);
-facilityLayer.addTo(map);
-routeLayer.addTo(map);
-radiusLayer.addTo(map);
-pointLayer.addTo(map);
-
-const CATEGORY = {
-  hospital: { label: "Hospital", symbol: "H", color: "#c62828" },
-  clinic: { label: "Clinic / health centre", symbol: "+", color: "#168447" },
-  doctor: { label: "Doctor / medical practice", symbol: "D", color: "#1565c0" },
-  pharmacy: { label: "Pharmacy", symbol: "P", color: "#7b1fa2" },
-  dental: { label: "Dental facility", symbol: "T", color: "#ef6c00" },
-  other: { label: "Other healthcare", symbol: "+", color: "#546e7a" }
-};
-const POP_COLORS = [
-  "#ffffcc", "#ffeda0", "#fed976", "#feb24c",
-  "#fd8d3c", "#f03b20", "#bd0026"
-];
-const POP_LABELS = [
-  "Very low", "Low", "Moderate", "Elevated",
-  "High", "Very high", "Highest"
-];
-
-function setStatus(message, kind = "") {
-  const el = $("mainStatus");
-  el.textContent = message;
-  el.className = "status " + kind;
+function setStatus(id,message,type=""){
+  const el=$(id);
+  el.textContent=message;
+  el.className="status"+(type?" "+type:"");
 }
-function setRouteSummary(message, kind = "") {
-  const el = $("routeSummary");
-  el.textContent = message;
-  el.className = "status " + kind;
+function esc(value){
+  return String(value??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
 }
-function safeNumber(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const n = Number(String(value).replace(/,/g, ""));
-  return Number.isFinite(n) ? n : null;
+function num(value,digits=1){
+  if(!Number.isFinite(value)) return "—";
+  return value.toLocaleString(undefined,{maximumFractionDigits:digits,minimumFractionDigits:digits});
 }
-function fmt(value, digits = 1) {
-  if (!Number.isFinite(value)) return "—";
-  return value.toLocaleString(undefined, {
-    maximumFractionDigits: digits
-  });
+function haversine(a,b){
+  const R=6371,rad=Math.PI/180;
+  const dLat=(b.lat-a.lat)*rad,dLon=(b.lon-a.lon)*rad;
+  const x=Math.sin(dLat/2)**2+
+    Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
 }
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, ch => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[ch]));
-}
-function norm(value) {
-  return String(value ?? "").trim().toLowerCase();
-}
-function categoryOf(tags = {}) {
-  const healthcare = norm(tags.healthcare);
-  const amenity = norm(tags.amenity);
-  const shop = norm(tags.shop);
-  const name = norm(tags.name);
-
-  if (healthcare === "hospital" || amenity === "hospital") return "hospital";
-  if (healthcare === "clinic" || healthcare === "health_centre" ||
-      healthcare === "centre" || healthcare === "doctor" && tags.emergency === "yes") return "clinic";
-  if (healthcare === "doctor" || healthcare === "physician" || amenity === "doctors") return "doctor";
-  if (healthcare === "dentist" || amenity === "dentist") return "dental";
-  if (healthcare === "pharmacy" || amenity === "pharmacy" || shop === "chemist") return "pharmacy";
-  if (healthcare || amenity === "clinic" || amenity === "doctors") return "other";
-  if (/hospital/.test(name)) return "hospital";
-  if (/clinic|health centre|health center/.test(name)) return "clinic";
-  if (/pharmacy|chemist/.test(name)) return "pharmacy";
-  if (/dentist|dental/.test(name)) return "dental";
+function facilityType(tags={}){
+  const a=tags.amenity||"";
+  if(a==="hospital"||tags.healthcare==="hospital") return "hospital";
+  if(a==="clinic"||tags.healthcare==="clinic"||tags.healthcare==="centre"||tags.healthcare==="health_centre") return "clinic";
+  if(a==="doctors"||tags.healthcare==="doctor") return "doctors";
+  if(a==="pharmacy") return "pharmacy";
   return "other";
 }
-function facilityName(tags = {}, id = "") {
-  return tags.name || tags["name:en"] || tags.operator ||
-    (tags.healthcare ? tags.healthcare.replace(/_/g, " ") : "Healthcare facility " + id);
+function typeLabel(f){
+  return ({hospital:"Hospital",clinic:"Clinic / health centre",doctors:"Doctor / medical practice",pharmacy:"Pharmacy",other:"Health facility"})[f.type]||"Health facility";
 }
-function makeIcon(category, special = null) {
-  const config = special === "start"
-    ? { symbol: "S", color: "#111827" }
-    : special === "destination"
-      ? { symbol: "D", color: "#f9a825", text: "#222" }
-      : CATEGORY[category] || CATEGORY.other;
-
+function typeColor(type){
+  return ({hospital:"#c43e4c",clinic:"#178a82",doctors:"#276bc0",pharmacy:"#8056b5",other:"#276bc0"})[type]||"#276bc0";
+}
+function iconFor(type){
+  const emoji={hospital:"✚",clinic:"✚",doctors:"⚕",pharmacy:"＋",other:"+"}[type]||"+";
   return L.divIcon({
-    className: "",
-    html: `<span style="
-      display:flex;align-items:center;justify-content:center;
-      width:22px;height:22px;border-radius:50%;
-      background:${config.color};color:${config.text || "#fff"};
-      font-weight:700;font-size:11px;
-      border:2px solid white;box-shadow:0 1px 4px #0008
-    ">${config.symbol}</span>`,
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
-    popupAnchor: [0, -10]
+    className:"",
+    html:`<div style="width:25px;height:25px;border-radius:50%;background:${typeColor(type)};border:2px solid white;box-shadow:0 1px 5px #0005;color:white;font-weight:900;text-align:center;line-height:21px;font-size:15px">${emoji}</div>`,
+    iconSize:[25,25],iconAnchor:[12,12]
   });
 }
-function getVisibleFacilities() {
-  const type = $("facilityType").value;
-  const search = norm($("facilitySearch").value);
-  return facilities.filter(f => {
-    if (type !== "all" && f.category !== type) return false;
-    if (search && !norm(f.name + " " + f.category + " " + f.address).includes(search)) return false;
-    return true;
-  });
+function getName(tags, fallback){
+  return tags.name||tags["name:en"]||tags.operator||tags.brand||fallback;
 }
-function facilityPopup(f) {
-  return `<strong>${escapeHTML(f.name)}</strong><br>
-    Type: ${escapeHTML(CATEGORY[f.category]?.label || f.category)}<br>
-    ${escapeHTML(f.address || "Address not mapped")}<br>
-    Coordinates: ${f.lat.toFixed(5)}, ${f.lon.toFixed(5)}<br>
-    <button onclick="window.chooseFacilityAsStart('${f.id}')">Use as start</button>
-    <button onclick="window.chooseFacilityAsDestination('${f.id}')">Use as destination</button>`;
+function facilityPopup(f){
+  return `<b>${esc(f.name)}</b><br>${esc(typeLabel(f))}<br>
+  ${f.tags.operator?`Operator: ${esc(f.tags.operator)}<br>`:""}
+  ${f.tags["addr:city"]?`Town: ${esc(f.tags["addr:city"])}<br>`:""}
+  ${f.tags.phone?`Phone: ${esc(f.tags.phone)}<br>`:""}
+  ${f.distance!==undefined?`Straight-line distance: ${num(f.distance)} km<br>`:""}
+  <small>OpenStreetMap record; verify details independently.</small>`;
 }
-function renderFacilities() {
+
+function renderFacilities(){
   facilityLayer.clearLayers();
-  const visible = getVisibleFacilities();
-  if ($("showFacilities").checked) {
-    visible.forEach(f => {
-      L.marker([f.lat, f.lon], { icon: makeIcon(f.category) })
-        .bindPopup(facilityPopup(f))
-        .addTo(facilityLayer);
-    });
-  }
-  $("facilityCount").textContent = fmt(visible.length, 0);
-  renderTypeSummary(visible);
-}
-function addFacility(f) {
-  if (!Number.isFinite(f.lat) || !Number.isFinite(f.lon)) return;
-  if (f.lat < 12.8 || f.lat > 14.1 || f.lon < -17.5 || f.lon > -13.2) return;
-  const key = String(f.id || `${f.name}-${f.lat}-${f.lon}`);
-  if (facilities.some(old => old.id === key)) return;
-  facilities.push({ ...f, id: key });
-}
-function addressFromTags(tags = {}) {
-  const parts = [
-    tags["addr:street"], tags["addr:place"],
-    tags["addr:suburb"], tags["addr:city"], tags["addr:district"]
-  ].filter(Boolean);
-  return parts.join(", ");
-}
-function populateFacilityControls() {
-  const options = facilities.slice().sort((a,b) => a.name.localeCompare(b.name));
-  for (const id of ["startFacility", "destFacility"]) {
-    const select = $(id);
-    const previous = select.value;
-    select.innerHTML = '<option value="">Choose a facility</option>';
-    options.forEach(f => {
-      const opt = document.createElement("option");
-      opt.value = f.id;
-      opt.textContent = `${f.name} — ${CATEGORY[f.category]?.label || f.category}`;
-      select.appendChild(opt);
-    });
-    if (options.some(f => f.id === previous)) select.value = previous;
-  }
+  facilityMarkers=[];
+  const chosen=$("facilityType").value;
+  const show=$("showFacilities").checked;
+  const query=$("searchName").value.trim().toLowerCase();
 
-  const datalist = $("facilitySuggestions");
-  datalist.innerHTML = "";
-  options.forEach(f => {
-    const opt = document.createElement("option");
-    opt.value = f.name;
-    datalist.appendChild(opt);
+  const shown=facilities.filter(f=>{
+    const typeOk=chosen==="all" || f.type===chosen;
+    const textOk=!query || `${f.name} ${f.tags["addr:city"]||""} ${f.tags.operator||""}`.toLowerCase().includes(query);
+    return typeOk&&textOk;
   });
 
-  const placeList = $("placeSuggestions");
-  placeList.innerHTML = "";
-  ["Banjul", "Serekunda", "Brikama", "Bakau", "Farafenni",
-   "Lamin", "Gunjur", "Basse Santa Su", "Kerewan", "Soma",
-   "Janjanbureh", "Barra", "Kartong", "Essau", "Bansang"].forEach(place => {
-    const opt = document.createElement("option");
-    opt.value = place;
-    placeList.appendChild(opt);
-  });
-  options.forEach(f => {
-    const opt = document.createElement("option");
-    opt.value = f.name;
-    placeList.appendChild(opt);
-  });
+  if(show){
+    shown.forEach(f=>{
+      const marker=L.marker([f.lat,f.lon],{icon:iconFor(f.type)});
+      marker.bindPopup(facilityPopup(f));
+      marker.on("click",()=>{selectedFacility=f;renderFacilityList();});
+      marker.addTo(facilityLayer);
+      facilityMarkers.push(marker);
+    });
+  }
+  $("kFacilities").textContent=facilities.length.toLocaleString();
+  $("kHospitals").textContent=facilities.filter(f=>f.type==="hospital").length.toLocaleString();
+  renderFacilityList();
 }
-function renderTypeSummary(list = getVisibleFacilities()) {
-  const counts = {};
-  Object.keys(CATEGORY).forEach(k => counts[k] = 0);
-  list.forEach(f => counts[f.category] = (counts[f.category] || 0) + 1);
-  $("typeSummary").innerHTML = Object.keys(CATEGORY).map(key =>
-    `<div class="bar-row">
-      <div class="bar-head"><span>${CATEGORY[key].label}</span><strong>${fmt(counts[key],0)}</strong></div>
-    </div>`).join("");
-}
-async function loadFacilities() {
-  if (facilityRequestBusy) return;
-  facilityRequestBusy = true;
-  $("loadFacilitiesBtn").disabled = true;
-  setStatus("Loading mapped healthcare facilities from OpenStreetMap…");
-  const query = `
-[out:json][timeout:45];
+
+async function loadFacilities(){
+  $("loadFacilities").disabled=true;
+  setStatus("loadStatus","Querying OpenStreetMap for mapped healthcare facilities in The Gambia…");
+  try{
+    // Bounding box covers The Gambia and nearby mapped features.
+    // Returned features are filtered against approximate country bounds.
+    const query=`[out:json][timeout:60];
 (
-  node["healthcare"](12.8,-17.5,14.1,-13.2);
-  way["healthcare"](12.8,-17.5,14.1,-13.2);
-  relation["healthcare"](12.8,-17.5,14.1,-13.2);
-  node["amenity"~"hospital|clinic|doctors|dentist|pharmacy"](12.8,-17.5,14.1,-13.2);
-  way["amenity"~"hospital|clinic|doctors|dentist|pharmacy"](12.8,-17.5,14.1,-13.2);
-  relation["amenity"~"hospital|clinic|doctors|dentist|pharmacy"](12.8,-17.5,14.1,-13.2);
-  node["shop"="chemist"](12.8,-17.5,14.1,-13.2);
+ node["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](8.0,-16.95,13.85,-13.7);
+ way["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](8.0,-16.95,13.85,-13.7);
+ relation["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](8.0,-16.95,13.85,-13.7);
+ node["healthcare"~"^(hospital|clinic|centre|health_centre|doctor)$"](8.0,-16.95,13.85,-13.7);
+ way["healthcare"~"^(hospital|clinic|centre|health_centre|doctor)$"](8.0,-16.95,13.85,-13.7);
 );
 out center tags;`;
-  const endpoints = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
-    "https://overpass.private.coffee/api/interpreter"
-  ];
-  let lastError = null;
-  try {
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-          body: "data=" + encodeURIComponent(query)
-        });
-        if (!response.ok) throw new Error(`Overpass HTTP ${response.status}`);
-        const data = await response.json();
-        if (!Array.isArray(data.elements)) throw new Error("Unexpected Overpass response");
-        facilities = [];
-        data.elements.forEach(el => {
-          const tags = el.tags || {};
-          const lat = el.lat ?? el.center?.lat;
-          const lon = el.lon ?? el.center?.lon;
-          if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-          const category = categoryOf(tags);
-          addFacility({
-            id: String(el.type) + "-" + String(el.id),
-            name: facilityName(tags, el.id),
-            category,
-            lat, lon,
-            address: addressFromTags(tags),
-            osmType: el.type,
-            osmId: el.id,
-            tags
-          });
-        });
-        populateFacilityControls();
-        renderFacilities();
-        setStatus(`Loaded ${fmt(facilities.length,0)} mapped healthcare facilities. OpenStreetMap coverage may be incomplete.`, "success");
-        updateRadiusCount();
-        return;
-      } catch (err) {
-        lastError = err;
-      }
-    }
-    throw lastError || new Error("All Overpass services failed");
-  } catch (err) {
-    setStatus("Could not load facilities: " + err.message +
-      ". Check your internet connection or try again later.", "error");
-  } finally {
-    facilityRequestBusy = false;
-    $("loadFacilitiesBtn").disabled = false;
-  }
-}
-
-function getPopulationField() {
-  const requested = $("populationField").value;
-  if (requested !== "auto") return requested;
-  const sample = eaFeatures.find(f => f.properties && Object.keys(f.properties).length);
-  if (!sample) return "map_pop";
-  const props = sample.properties;
-  return ["map_pop", "ls_pop", "enum_pop", "population", "POP", "pop"]
-    .find(k => props[k] !== undefined && props[k] !== null) || "map_pop";
-}
-function propertyValue(props, names) {
-  for (const name of names) {
-    const value = props?.[name];
-    if (value !== undefined && value !== null && String(value).trim() !== "") return String(value);
-  }
-  return "";
-}
-function getEAAdmin(f) {
-  const p = f.properties || {};
-  return {
-    lga: propertyValue(p, ["lganame", "LGA", "lga", "region", "Region"]),
-    district: propertyValue(p, ["distname", "district", "District", "DISTRICT"]),
-    ward: propertyValue(p, ["wardname", "ward", "Ward", "WARD"])
-  };
-}
-function getVisibleEAs() {
-  const lga = $("lgaFilter").value;
-  const district = $("districtFilter").value;
-  const ward = $("wardFilter").value;
-  return eaFeatures.filter(f => {
-    const a = getEAAdmin(f);
-    return (!lga || a.lga === lga) &&
-           (!district || a.district === district) &&
-           (!ward || a.ward === ward);
-  });
-}
-function getPopulation(f) {
-  const field = getPopulationField();
-  const p = f.properties || {};
-  let value = safeNumber(p[field]);
-  if (value === null && $("populationField").value === "auto") {
-    for (const k of ["map_pop","ls_pop","enum_pop","population","POP","pop"]) {
-      value = safeNumber(p[k]);
-      if (value !== null) break;
-    }
-  }
-  return value;
-}
-function populationClass(value, min, max) {
-  if (value === null || !Number.isFinite(value)) return -1;
-  if (max === min) return 3;
-  const t = (value - min) / (max - min);
-  return Math.max(0, Math.min(6, Math.floor(t * 7)));
-}
-function eaStyle(feature) {
-  const value = getPopulation(feature);
-  const visible = getVisibleEAs();
-  const values = visible.map(getPopulation).filter(v => v !== null).sort((a,b) => a-b);
-  const min = values.length ? values[0] : 0;
-  const max = values.length ? values[values.length-1] : 1;
-  const cls = populationClass(value, min, max);
-  return {
-    color: "#65758b",
-    weight: .45,
-    opacity: .8,
-    fillColor: cls < 0 ? "#b8c2cc" : POP_COLORS[cls],
-    fillOpacity: $("showEA").checked ? .58 : 0
-  };
-}
-function eaPopup(feature) {
-  const p = feature.properties || {};
-  const a = getEAAdmin(feature);
-  const field = getPopulationField();
-  const pop = getPopulation(feature);
-  const eaName = propertyValue(p, ["eaname", "FEACODE", "feacode", "EA", "ea", "name"]);
-  return `<strong>Enumeration Area</strong><br>
-    EA: ${escapeHTML(eaName || "Not named")}<br>
-    LGA: ${escapeHTML(a.lga || "Not recorded")}<br>
-    District: ${escapeHTML(a.district || "Not recorded")}<br>
-    Ward: ${escapeHTML(a.ward || "Not recorded")}<br>
-    Population (${escapeHTML(field)}): ${pop === null ? "Unavailable" : fmt(pop,0)}`;
-}
-function populateAdminFilters() {
-  const values = {
-    lga: [...new Set(eaFeatures.map(f => getEAAdmin(f).lga).filter(Boolean))].sort(),
-    district: [...new Set(eaFeatures.map(f => getEAAdmin(f).district).filter(Boolean))].sort(),
-    ward: [...new Set(eaFeatures.map(f => getEAAdmin(f).ward).filter(Boolean))].sort()
-  };
-  const current = {
-    lga: $("lgaFilter").value,
-    district: $("districtFilter").value,
-    ward: $("wardFilter").value
-  };
-  [
-    ["lgaFilter", values.lga, "All LGAs", current.lga],
-    ["districtFilter", values.district, "All districts", current.district],
-    ["wardFilter", values.ward, "All wards", current.ward]
-  ].forEach(([id, list, first, old]) => {
-    const el = $(id);
-    el.innerHTML = `<option value="">${first}</option>`;
-    list.forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      el.appendChild(opt);
-    });
-    if (list.includes(old)) el.value = old;
-  });
-}
-async function loadEAData() {
-  if (eaLoadPromise) return eaLoadPromise;
-  eaLoadPromise = (async () => {
-    const paths = [
-      "./Census_EAs_Geo.json",
-      "./Census_EAs_Geo.geojson",
-      "./data/Census_EAs_Geo.json",
-      "./data/Census_EAs_Geo.geojson"
+    const endpoints=[
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter"
     ];
-    let lastError = null;
-    for (const path of paths) {
-      try {
-        const response = await fetch(path, { cache: "no-store" });
-        if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
-        const data = await response.json();
-        const features = data.type === "FeatureCollection" ? data.features :
-          data.type === "Feature" ? [data] : null;
-        if (!Array.isArray(features)) throw new Error("File is not a GeoJSON FeatureCollection");
-        eaFeatures = features.filter(f => f && f.geometry);
-        if (!eaFeatures.length) throw new Error("GeoJSON contains no usable features");
-        populateAdminFilters();
-        renderEAs();
-        updatePopulationAnalytics();
-        setStatus(`Loaded ${fmt(eaFeatures.length,0)} EA polygons from ${path}.`, "success");
-        return true;
-      } catch (err) {
-        lastError = err;
-      }
+    let data=null,lastError=null;
+    for(const endpoint of endpoints){
+      try{
+        const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"data="+encodeURIComponent(query)});
+        if(!response.ok) throw new Error("Server returned HTTP "+response.status);
+        data=await response.json();
+        break;
+      }catch(e){lastError=e;}
     }
-    setStatus("EA GeoJSON was not found. Place Census_EAs_Geo.json beside index.html or in ./data/. " +
-      (lastError ? lastError.message : ""), "error");
-    return false;
-  })();
-  return eaLoadPromise;
-}
-function renderEAs() {
-  if (eaLayer) map.removeLayer(eaLayer);
-  const visible = getVisibleEAs();
-  const field = getPopulationField();
-  const vals = visible.map(getPopulation).filter(v => v !== null).sort((a,b) => a-b);
-  const min = vals.length ? vals[0] : 0;
-  const max = vals.length ? vals[vals.length-1] : 1;
+    if(!data) throw lastError||new Error("No response from the map data service.");
 
-  eaLayer = L.geoJSON(visible, {
-    style: feature => {
-      const value = getPopulation(feature);
-      const cls = populationClass(value, min, max);
-      return {
-        color: "#65758b", weight: .45, opacity: .8,
-        fillColor: cls < 0 ? "#b8c2cc" : POP_COLORS[cls],
-        fillOpacity: $("showEA").checked ? .58 : 0
-      };
-    },
-    onEachFeature: (feature, layer) => layer.bindPopup(eaPopup(feature))
-  });
-  if ($("showEA").checked) eaLayer.addTo(map);
-  $("eaCount").textContent = fmt(visible.length, 0);
-  $("populationLegend").querySelector(".legend-title").textContent = "EA population · " + field;
-  updatePopulationAnalytics();
-}
-function updatePopulationAnalytics() {
-  const visible = getVisibleEAs();
-  const values = visible.map(getPopulation).filter(v => v !== null);
-  const total = values.reduce((sum, v) => sum + v, 0);
-  $("eaCount").textContent = fmt(visible.length, 0);
-  $("populationTotal").textContent = values.length ? fmt(total, 0) : "—";
-
-  if (!values.length) {
-    $("populationSummary").textContent = "No numeric population values found for the selected field and filters.";
-    return;
-  }
-  const sorted = [...values].sort((a,b) => a-b);
-  const mean = total / values.length;
-  const median = sorted[Math.floor(sorted.length / 2)];
-  $("populationSummary").innerHTML =
-    `<div class="bar-row"><div class="bar-head"><span>EA records with population</span><strong>${fmt(values.length,0)}</strong></div></div>
-     <div class="bar-row"><div class="bar-head"><span>Minimum</span><strong>${fmt(sorted[0],0)}</strong></div></div>
-     <div class="bar-row"><div class="bar-head"><span>Median</span><strong>${fmt(median,0)}</strong></div></div>
-     <div class="bar-row"><div class="bar-head"><span>Mean per EA</span><strong>${fmt(mean,1)}</strong></div></div>
-     <div class="bar-row"><div class="bar-head"><span>Maximum</span><strong>${fmt(sorted[sorted.length-1],0)}</strong></div></div>`;
-}
-
-function haversine(a, b) {
-  const R = 6371;
-  const rad = x => x * Math.PI / 180;
-  const dLat = rad(b.lat - a.lat);
-  const dLon = rad(b.lon - a.lon);
-  const lat1 = rad(a.lat), lat2 = rad(b.lat);
-  const x = Math.sin(dLat/2)**2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon/2)**2;
-  return 2 * R * Math.asin(Math.sqrt(x));
-}
-function updateRadiusCircle() {
-  radiusLayer.clearLayers();
-  if (!$("showRadius").checked || !startPoint) {
-    updateRadiusCount();
-    return;
-  }
-  const km = Number($("radius").value);
-  L.circle([startPoint.lat, startPoint.lon], {
-    radius: km * 1000,
-    color: "#1d70b8",
-    weight: 1.3,
-    dashArray: "5 5",
-    fillColor: "#64a7d8",
-    fillOpacity: .08
-  }).bindPopup(`${km} km straight-line screening radius`).addTo(radiusLayer);
-  updateRadiusCount();
-}
-function updateRadiusCount() {
-  if (!startPoint) {
-    $("withinRadius").textContent = "—";
-    return;
-  }
-  const radius = Number($("radius").value);
-  const count = getVisibleFacilities().filter(f =>
-    haversine(startPoint, f) <= radius
-  ).length;
-  $("withinRadius").textContent = fmt(count, 0);
-}
-function pointObject(lat, lon, name, kind) {
-  return { lat: Number(lat), lon: Number(lon), name: name || kind, kind };
-}
-function setStartPoint(point, zoom = false) {
-  startPoint = point;
-  if (startMarker) pointLayer.removeLayer(startMarker);
-  startMarker = L.marker([point.lat, point.lon], { icon: makeIcon("other", "start") })
-    .bindPopup(`<strong>Starting point</strong><br>${escapeHTML(point.name)}`)
-    .addTo(pointLayer);
-  $("showStart").checked = true;
-  if (!$("showStart").checked) pointLayer.removeLayer(startMarker);
-  updateRadiusCircle();
-  if (zoom) map.setView([point.lat, point.lon], 13);
-}
-function setDestinationPoint(point, zoom = false) {
-  destinationPoint = point;
-  if (destinationMarker) pointLayer.removeLayer(destinationMarker);
-  destinationMarker = L.marker([point.lat, point.lon], { icon: makeIcon("other", "destination") })
-    .bindPopup(`<strong>Destination</strong><br>${escapeHTML(point.name)}`)
-    .addTo(pointLayer);
-  if (!$("showDestination").checked) pointLayer.removeLayer(destinationMarker);
-  if (zoom) map.setView([point.lat, point.lon], 13);
-}
-function syncPointVisibility() {
-  if (startMarker) {
-    if ($("showStart").checked) startMarker.addTo(pointLayer);
-    else pointLayer.removeLayer(startMarker);
-  }
-  if (destinationMarker) {
-    if ($("showDestination").checked) destinationMarker.addTo(pointLayer);
-    else pointLayer.removeLayer(destinationMarker);
-  }
-}
-function getGPS() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject(new Error("This browser does not support GPS."));
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
-        name: "Current GPS location",
-        kind: "gps"
-      }),
-      err => reject(new Error(err.message || "GPS permission was denied.")),
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
-    );
-  });
-}
-async function geocodePlace(query) {
-  const q = String(query || "").trim();
-  if (!q) throw new Error("Enter a community or place name first.");
-  const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.search = new URLSearchParams({
-    format: "jsonv2",
-    q: q + ", The Gambia",
-    countrycodes: "gm",
-    limit: "5",
-    addressdetails: "1"
-  }).toString();
-  const response = await fetch(url.toString(), {
-    headers: { "Accept": "application/json" }
-  });
-  if (!response.ok) throw new Error(`Place search HTTP ${response.status}`);
-  const results = await response.json();
-  if (!results.length) throw new Error(`No place found for "${q}". Try a nearby town or a more specific name.`);
-  const item = results[0];
-  return {
-    lat: Number(item.lat),
-    lon: Number(item.lon),
-    name: item.display_name || q,
-    kind: "place"
-  };
-}
-function findFacility(id) {
-  return facilities.find(f => f.id === id);
-}
-function chooseFacilityAsStart(id) {
-  const f = findFacility(id);
-  if (!f) return;
-  $("startChoice").value = "facility";
-  $("startFacility").value = id;
-  setStartPoint(pointObject(f.lat, f.lon, f.name, "facility"), true);
-  setStatus("Starting point set to " + f.name, "success");
-}
-function chooseFacilityAsDestination(id) {
-  const f = findFacility(id);
-  if (!f) return;
-  $("destChoice").value = "facility";
-  $("destFacility").value = id;
-  setDestinationPoint(pointObject(f.lat, f.lon, f.name, "facility"), true);
-  setStatus("Destination set to " + f.name, "success");
-}
-window.chooseFacilityAsStart = chooseFacilityAsStart;
-window.chooseFacilityAsDestination = chooseFacilityAsDestination;
-
-async function resolveStart() {
-  const choice = $("startChoice").value;
-  if (choice === "gps") return getGPS();
-  if (choice === "map") {
-    if (!startPoint || startPoint.kind !== "map") throw new Error("Choose “Pick on map”, then click the map for the starting point.");
-    return startPoint;
-  }
-  if (choice === "facility") {
-    const f = findFacility($("startFacility").value);
-    if (!f) throw new Error("Select a starting facility.");
-    return pointObject(f.lat, f.lon, f.name, "facility");
-  }
-  if (choice === "place") return geocodePlace($("startPlace").value);
-  throw new Error("Select a valid starting point.");
-}
-async function resolveDestination() {
-  const choice = $("destChoice").value;
-  if (choice === "gps") return getGPS();
-  if (choice === "map") {
-    if (!destinationPoint || destinationPoint.kind !== "map") throw new Error("Choose “Pick on map”, then click the map for the destination.");
-    return destinationPoint;
-  }
-  if (choice === "facility") {
-    const f = findFacility($("destFacility").value);
-    if (!f) throw new Error("Select a destination healthcare facility.");
-    return pointObject(f.lat, f.lon, f.name, "facility");
-  }
-  if (choice === "place") return geocodePlace($("destPlace").value);
-  throw new Error("Select a valid destination.");
-}
-async function getRoadRoute(start, end) {
-  const coords = `${start.lon},${start.lat};${end.lon},${end.lat}`;
-  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=false`;
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`OSRM HTTP ${response.status}`);
-  const data = await response.json();
-  if (data.code !== "Ok" || !data.routes?.length) throw new Error("No road route returned.");
-  const route = data.routes[0];
-  return {
-    distanceKm: route.distance / 1000,
-    durationMin: route.duration / 60,
-    geometry: route.geometry,
-    source: "OSRM driving route"
-  };
-}
-async function analyseAccess() {
-  $("analyseBtn").disabled = true;
-  setRouteSummary("Calculating accessibility…");
-  try {
-    const start = await resolveStart();
-    const dest = await resolveDestination();
-    startPoint = start;
-    destinationPoint = dest;
-    setStartPoint(start);
-    setDestinationPoint(dest);
-    updateRadiusCircle();
-
-    const straightKm = haversine(start, dest);
-    let result;
-    try {
-      result = await getRoadRoute(start, dest);
-    } catch (err) {
-      const speed = Number($("routeSpeed").value);
-      result = {
-        distanceKm: straightKm,
-        durationMin: straightKm / speed * 60,
-        geometry: null,
-        source: `Straight-line fallback at ${speed} km/h`
-      };
+    const unique=new Map();
+    for(const el of (data.elements||[])){
+      const tags=el.tags||{};
+      const lat=el.lat??el.center?.lat;
+      const lon=el.lon??el.center?.lon;
+      if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
+      if(lat<8||lat>13.85||lon< -16.95||lon> -13.7)continue;
+      const type=facilityType(tags);
+      if(!["hospital","clinic","doctors","pharmacy"].includes(type))continue;
+      const key=`${type}:${(tags.name||"").toLowerCase()}:${lat.toFixed(4)}:${lon.toFixed(4)}`;
+      if(unique.has(key))continue;
+      unique.set(key,{
+        id:`${el.type}/${el.id}`,name:getName(tags,`${typeLabel({type})} ${el.id}`),
+        lat,lon,type,tags
+      });
     }
-
-    routeLayer.clearLayers();
-    if (result.geometry && $("showRoute").checked) {
-      routeLine = L.geoJSON(result.geometry, {
-        style: { color: "#0077cc", weight: 4, opacity: .9 }
-      }).addTo(routeLayer);
-      map.fitBounds(routeLine.getBounds().pad(.15));
-    } else {
-      routeLine = null;
-      if ($("showRoute").checked) {
-        routeLine = L.polyline(
-          [[start.lat, start.lon], [dest.lat, dest.lon]],
-          { color: "#0077cc", weight: 3, dashArray: "6 5" }
-        ).addTo(routeLayer);
-        map.fitBounds(routeLine.getBounds().pad(.15));
-      }
-    }
-    lastRoute = {
-      start, destination: dest, straightKm,
-      distanceKm: result.distanceKm,
-      durationMin: result.durationMin,
-      source: result.source
-    };
-    setRouteSummary(
-      `From: ${start.name}\nTo: ${dest.name}\nStraight-line distance: ${fmt(straightKm,2)} km\n` +
-      `Route / estimate distance: ${fmt(result.distanceKm,2)} km\nEstimated travel time: ${fmt(result.durationMin,0)} minutes\nMethod: ${result.source}`,
-      result.source.includes("fallback") ? "" : "success"
-    );
-    updateRadiusCount();
-    syncPointVisibility();
-    setStatus("Accessibility analysis completed. Review the routing method and screening limitations.", "success");
-  } catch (err) {
-    setRouteSummary(err.message, "error");
-    setStatus(err.message, "error");
-  } finally {
-    $("analyseBtn").disabled = false;
+    facilities=[...unique.values()].sort((a,b)=>a.name.localeCompare(b.name));
+    if(!facilities.length) throw new Error("No matching records returned. Try again later.");
+    renderFacilities();
+    updateAccessAnalysis();
+    setStatus("loadStatus",`Loaded ${facilities.length} mapped records from OpenStreetMap. Facility completeness is not guaranteed.`,"success");
+  }catch(e){
+    setStatus("loadStatus","Could not load healthcare data: "+(e.message||e)+". Check internet access or try again later.","error");
+  }finally{
+    $("loadFacilities").disabled=false;
   }
 }
 
-function beginMapPick(which) {
-  selectionMode = which;
-  $("mapInstructions").textContent = which === "start"
-    ? "START SELECTION: click the map to set the starting point."
-    : "DESTINATION SELECTION: click the map to set the destination.";
-  $("startChoice").value = which === "start" ? "map" : $("startChoice").value;
-  if (which === "destination") $("destChoice").value = "map";
-  setStatus(`Click the map to set the ${which === "start" ? "starting point" : "destination"}.`);
-}
-map.on("click", event => {
-  if (!selectionMode) return;
-  const point = pointObject(event.latlng.lat, event.latlng.lng,
-    selectionMode === "start" ? "Map-selected starting point" : "Map-selected destination",
-    "map");
-  if (selectionMode === "start") {
-    $("startChoice").value = "map";
-    setStartPoint(point);
-  } else {
-    $("destChoice").value = "map";
-    setDestinationPoint(point);
+function updateOriginMarker(){
+  originLayer.clearLayers();
+  originMarker=null;
+  if(origin && $("showOrigin").checked){
+    originMarker=L.marker([origin.lat,origin.lon],{
+      icon:L.divIcon({className:"",html:'<div style="width:28px;height:28px;border-radius:50%;background:#e89a27;border:3px solid white;box-shadow:0 1px 5px #0006;text-align:center;line-height:22px;font-size:15px">●</div>',iconSize:[28,28],iconAnchor:[14,14]})
+    }).addTo(originLayer);
+    originMarker.bindPopup(`<b>Starting location</b><br>${esc(origin.name||"Selected point")}<br>${num(origin.lat,5)}, ${num(origin.lon,5)}`);
   }
-  selectionMode = null;
-  $("mapInstructions").textContent =
-    "Point selected. Choose the other endpoint if needed, then click Analyse access.";
-  setStatus("Map point selected. Run Analyse access to calculate the route.", "success");
+  $("originStatus").textContent=origin
+    ? `${origin.name||"Selected point"} · ${num(origin.lat,5)}, ${num(origin.lon,5)}`
+    : "Starting location not set.";
+  $("analyse").disabled=!origin||!facilities.length;
+  $("routeNearest").disabled=!origin||!nearestFacility;
+  $("routeSelected").disabled=!origin||!selectedFacility;
+}
+function setOrigin(lat,lon,name="Selected point"){
+  origin={lat:Number(lat),lon:Number(lon),name};
+  selectedFacility=null;
+  routeLayer.clearLayers();
+  routeLine=null;
+  $("routeSummary").textContent="Origin changed. Calculate a new route.";
+  $("directions").innerHTML='<p class="note">Calculate a route to display directions.</p>';
+  updateOriginMarker();
+  updateAccessAnalysis();
+}
+map.on("click",e=>{
+  if(!clickToSetOrigin)return;
+  clickToSetOrigin=false;
+  $("mapOrigin").textContent="Click map to set origin";
+  setOrigin(e.latlng.lat,e.latlng.lng,"Map-selected location");
 });
 
-function applyLayerVisibility() {
-  if ($("showFacilities").checked) {
-    if (!map.hasLayer(facilityLayer)) facilityLayer.addTo(map);
-    renderFacilities();
-  } else {
-    map.removeLayer(facilityLayer);
-  }
-  if ($("showEA").checked) renderEAs();
-  else if (eaLayer) map.removeLayer(eaLayer);
+$("mapOrigin").addEventListener("click",()=>{
+  clickToSetOrigin=!clickToSetOrigin;
+  $("mapOrigin").textContent=clickToSetOrigin?"Click the map now…":"Click map to set origin";
+  setStatus("originStatus",clickToSetOrigin?"Click the map to choose the starting location.":"Map selection cancelled.");
+});
 
-  if (!$("showRoute").checked) routeLayer.clearLayers();
-  else if (lastRoute) redrawLastRoute();
+async function findPlace(){
+  const q=$("originName").value.trim();
+  if(!q){setStatus("originStatus","Enter a community or place name first.","error");return;}
+  setStatus("originStatus","Searching for "+q+"…");
+  try{
+    const url="https://nominatim.openstreetmap.org/search?format=jsonv2&country=The%20Gambia&limit=5&q="+encodeURIComponent(q+", The Gambia");
+    const r=await fetch(url,{headers:{"Accept":"application/json"}});
+    if(!r.ok)throw new Error("Geocoding service returned HTTP "+r.status);
+    const data=await r.json();
+    if(!data.length)throw new Error("No matching place found. Try a different spelling or click the map.");
+    const result=data[0];
+    setOrigin(Number(result.lat),Number(result.lon),result.display_name.split(",").slice(0,2).join(","));
+    map.setView([origin.lat,origin.lon],13);
+  }catch(e){
+    setStatus("originStatus","Place search failed: "+(e.message||e),"error");
+  }
+}
+$("findPlace").addEventListener("click",findPlace);
+$("originName").addEventListener("keydown",e=>{if(e.key==="Enter")findPlace();});
 
-  updateRadiusCircle();
-  syncPointVisibility();
-}
-function redrawLastRoute() {
-  routeLayer.clearLayers();
-  if (!lastRoute || !$("showRoute").checked) return;
-  const a = lastRoute.start, b = lastRoute.destination;
-  L.polyline([[a.lat,a.lon],[b.lat,b.lon]], {
-    color: "#0077cc", weight: 3, dashArray: "6 5"
-  }).addTo(routeLayer);
-}
-function fitResults() {
-  const layers = [];
-  if ($("showFacilities").checked && map.hasLayer(facilityLayer) && facilityLayer.getLayers().length) layers.push(facilityLayer);
-  if ($("showEA").checked && eaLayer && map.hasLayer(eaLayer) && eaLayer.getLayers().length) layers.push(eaLayer);
-  if ($("showRoute").checked && routeLayer.getLayers().length) layers.push(routeLayer);
-  if (startMarker && $("showStart").checked) layers.push(startMarker);
-  if (destinationMarker && $("showDestination").checked) layers.push(destinationMarker);
-  if (!layers.length) {
-    map.setView(GAMBIA_CENTER, 8);
+$("locateMe").addEventListener("click",()=>{
+  if(!navigator.geolocation){setStatus("originStatus","Geolocation is not supported by this browser.","error");return;}
+  setStatus("originStatus","Requesting your device location…");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    setOrigin(pos.coords.latitude,pos.coords.longitude,"Current device location");
+    map.setView([origin.lat,origin.lon],14);
+  },err=>setStatus("originStatus","Location unavailable or permission denied. You can search for a place or click the map.","error"),{enableHighAccuracy:true,timeout:12000});
+});
+
+function updateAccessAnalysis(){
+  if(!origin){
+    $("kNearest").textContent="—";
+    $("kTime").textContent="—";
+    $("nearestResult").textContent="Set a starting location to calculate access.";
+    $("routeNearest").disabled=true;
     return;
   }
-  const group = L.featureGroup(layers);
-  const bounds = group.getBounds();
-  if (bounds.isValid()) map.fitBounds(bounds.pad(.08), { maxZoom: 14 });
-}
-function setBasemap(name) {
-  if (activeBaseLayer) map.removeLayer(activeBaseLayer);
-  activeBaseLayer = baseLayers[name] || baseLayers.street;
-  activeBaseLayer.addTo(map);
-}
-function csvEscape(value) {
-  const str = String(value ?? "");
-  return '"' + str.replace(/"/g, '""') + '"';
-}
-function downloadCSV(filename, rows) {
-  if (!rows.length) {
-    setStatus("There are no records to export.", "error");
-    return;
+  facilities.forEach(f=>f.distance=haversine(origin,{lat:f.lat,lon:f.lon}));
+  const eligible=facilities.filter(f=>$("facilityType").value==="all"||f.type===$("facilityType").value).sort((a,b)=>a.distance-b.distance);
+  nearestFacility=eligible[0]||null;
+  const radius=Number($("radius").value);
+  const within=eligible.filter(f=>f.distance<=radius).length;
+
+  if(nearestFacility){
+    $("kNearest").textContent=num(nearestFacility.distance);
+    const assumedSpeed=Number($("speed").value);
+    $("kTime").textContent="~"+Math.round(nearestFacility.distance/assumedSpeed*60)+" min*";
+    $("nearestResult").innerHTML=
+      `<b>${esc(nearestFacility.name)}</b><br>${esc(typeLabel(nearestFacility))}<br>`+
+      `Straight-line distance: <b>${num(nearestFacility.distance)} km</b><br>`+
+      `Facilities within ${radius} km: <b>${within}</b><br>`+
+      `<span style="font-size:10px">*Fallback time based on straight-line distance and assumed speed. Calculate a route for a road-network estimate.</span>`;
+  }else{
+    $("kNearest").textContent="—";$("kTime").textContent="—";
+    $("nearestResult").textContent="No facility matches the selected type.";
   }
-  const headers = Object.keys(rows[0]);
-  const csv = [headers.map(csvEscape).join(","),
-    ...rows.map(row => headers.map(k => csvEscape(row[k])).join(","))].join("\r\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  renderFacilityList();
+  updateOriginMarker();
 }
-function exportFacilities() {
-  const rows = getVisibleFacilities().map(f => ({
-    id: f.id, name: f.name, type: CATEGORY[f.category]?.label || f.category,
-    latitude: f.lat, longitude: f.lon, address: f.address,
-    source: "OpenStreetMap"
-  }));
-  downloadCSV("gbos_geoai_healthcare_facilities.csv", rows);
-}
-function exportAccess() {
-  if (!lastRoute) {
-    setStatus("Run Analyse access before exporting access results.", "error");
-    return;
-  }
-  downloadCSV("gbos_geoai_accessibility.csv", [{
-    starting_point: lastRoute.start.name,
-    start_latitude: lastRoute.start.lat,
-    start_longitude: lastRoute.start.lon,
-    destination: lastRoute.destination.name,
-    destination_latitude: lastRoute.destination.lat,
-    destination_longitude: lastRoute.destination.lon,
-    straight_line_km: lastRoute.straightKm,
-    route_or_estimated_distance_km: lastRoute.distanceKm,
-    estimated_travel_time_minutes: lastRoute.durationMin,
-    method: lastRoute.source,
-    screening_radius_km: $("radius").value
-  }]);
-}
-function exportEAs() {
-  const field = getPopulationField();
-  const rows = getVisibleEAs().map((f, i) => {
-    const p = f.properties || {};
-    const a = getEAAdmin(f);
-    return {
-      ea_id: propertyValue(p, ["feacode", "FEACODE", "eaname", "EA", "id"]) || i + 1,
-      lga: a.lga, district: a.district, ward: a.ward,
-      population_field: field,
-      population: getPopulation(f)
+
+function renderFacilityList(){
+  const limit=Number($("listLimit").value);
+  const chosen=$("facilityType").value;
+  let list=facilities.filter(f=>chosen==="all"||f.type===chosen);
+  if(origin)list.forEach(f=>f.distance=haversine(origin,{lat:f.lat,lon:f.lon}));
+  if(origin)list.sort((a,b)=>a.distance-b.distance);
+  const query=$("searchName").value.trim().toLowerCase();
+  if(query)list=list.filter(f=>`${f.name} ${f.tags["addr:city"]||""} ${f.tags.operator||""}`.toLowerCase().includes(query));
+  list=list.slice(0,limit);
+
+  $("facilityList").innerHTML=list.length?list.map(f=>`
+    <div class="facility-card" data-id="${esc(f.id)}" tabindex="0" role="button">
+      <strong>${esc(f.name)}</strong>
+      <small>${esc(typeLabel(f))}${f.distance!==undefined?" · "+num(f.distance)+" km straight-line":""}</small>
+      ${f.tags.operator?`<small>Operator: ${esc(f.tags.operator)}</small>`:""}
+      <span class="tag">${f.distance!==undefined?"NEARBY RESULT":"MAPPED FACILITY"}</span>
+    </div>`).join(""):'<p class="note">No facilities match this filter.</p>';
+
+  $("facilityList").querySelectorAll(".facility-card").forEach(card=>{
+    const action=()=>{
+      const f=facilities.find(x=>x.id===card.dataset.id);
+      if(!f)return;
+      selectedFacility=f;
+      map.setView([f.lat,f.lon],14);
+      const marker=facilityMarkers.find(m=>m.getLatLng().lat===f.lat&&m.getLatLng().lng===f.lon);
+      if(marker)marker.openPopup();
+      $("routeSelected").disabled=!origin;
     };
+    card.addEventListener("click",action);
+    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();action();}});
   });
-  downloadCSV("gbos_geoai_ea_population.csv", rows);
+  $("routeNearest").disabled=!origin||!nearestFacility;
+  $("routeSelected").disabled=!origin||!selectedFacility;
 }
-function resetApp() {
-  $("facilityType").value = "all";
-  $("facilitySearch").value = "";
-  $("startChoice").value = "gps";
-  $("destChoice").value = "facility";
-  $("startFacility").value = "";
-  $("destFacility").value = "";
-  $("startPlace").value = "";
-  $("destPlace").value = "";
-  $("radius").value = "10";
-  $("routeSpeed").value = "30";
-  $("lgaFilter").value = "";
-  $("districtFilter").value = "";
-  $("wardFilter").value = "";
-  $("populationField").value = "map_pop";
-  $("showFacilities").checked = true;
-  $("showEA").checked = true;
-  $("showRoute").checked = true;
-  $("showRadius").checked = true;
-  $("showStart").checked = true;
-  $("showDestination").checked = true;
-  startPoint = null;
-  destinationPoint = null;
-  startMarker = null;
-  destinationMarker = null;
-  routeLine = null;
-  lastRoute = null;
-  selectionMode = null;
-  facilityLayer.clearLayers();
-  routeLayer.clearLayers();
-  radiusLayer.clearLayers();
-  pointLayer.clearLayers();
-  if (eaLayer) map.removeLayer(eaLayer);
-  eaLayer = null;
+
+async function calculateRoute(destination){
+  if(!origin||!destination){setStatus("routeSummary","Choose a starting point and destination.","error");return;}
+  const id=++routeRequestId;
+  routeDestination=destination;
+  setStatus("routeSummary","Calculating road route…");
+  $("directions").innerHTML='<p class="note">Requesting road-network route…</p>';
+  try{
+    const url=`https://router.project-osrm.org/route/v1/driving/${origin.lon},${origin.lat};${destination.lon},${destination.lat}?overview=full&geometries=geojson&steps=true`;
+    const response=await fetch(url);
+    if(!response.ok)throw new Error("Routing service returned HTTP "+response.status);
+    const data=await response.json();
+    if(id!==routeRequestId)return;
+    if(data.code!=="Ok"||!data.routes?.length)throw new Error("No drivable route found between these points.");
+    const route=data.routes[0];
+    const coords=route.geometry.coordinates.map(c=>[c[1],c[0]]);
+    routeLayer.clearLayers();
+    routeLine=L.polyline(coords,{color:"#7e57c2",weight:5,opacity:.9}).addTo(routeLayer);
+    const km=route.distance/1000;
+    const minutes=route.duration/60;
+    $("routeSummary").innerHTML=`<b>Road route calculated</b><br>Road distance: <b>${num(km)} km</b><br>Routing estimate: <b>${formatDuration(minutes)}</b><br><small>OSRM route estimate; live traffic is not included.</small>`;
+    $("kTime").textContent=formatDuration(minutes);
+    if($("showRoutes").checked)routeLine.addTo(routeLayer);
+    map.fitBounds(routeLine.getBounds(),{padding:[35,35],maxZoom:13});
+    renderDirections(route.legs?.[0]?.steps||[]);
+  }catch(e){
+    if(id!==routeRequestId)return;
+    const speed=Number($("speed").value);
+    const straight=haversine(origin,destination);
+    const min=straight/speed*60;
+    setStatus("routeSummary","Road routing unavailable: "+(e.message||e)+". A rough fallback is shown below.","error");
+    $("routeSummary").innerHTML+=`<br>Fallback straight-line distance: ${num(straight)} km<br>Assumed-speed estimate: ${formatDuration(min)}<br><small>This is not a road route.</small>`;
+    $("kTime").textContent="~"+formatDuration(min);
+    $("directions").innerHTML='<p class="note">Turn-by-turn directions are unavailable because no road route was returned. Try again later.</p>';
+  }
+}
+function formatDuration(minutes){
+  if(!Number.isFinite(minutes))return "—";
+  const m=Math.round(minutes);
+  if(m<60)return `${m} min`;
+  return `${Math.floor(m/60)} h ${m%60} min`;
+}
+function renderDirections(steps){
+  if(!steps.length){
+    $("directions").innerHTML='<p class="note">The routing service did not return step-by-step directions.</p>';
+    return;
+  }
+  const top=steps.slice(0,80);
+  $("directions").innerHTML=top.map((s,i)=>{
+    const name=s.name?` — ${esc(s.name)}`:"";
+    const distance=s.distance>=1000?num(s.distance/1000)+" km":Math.round(s.distance)+" m";
+    return `<div class="route-step"><b>${i+1}.</b> ${esc(s.maneuver?.type||"Continue")} ${esc(s.maneuver?.modifier||"")}${name}<br><small>${distance}</small></div>`;
+  }).join("")+(steps.length>80?'<p class="note">Showing the first 80 directions.</p>':"");
+}
+$("routeNearest").addEventListener("click",()=>nearestFacility&&calculateRoute(nearestFacility));
+$("routeSelected").addEventListener("click",()=>selectedFacility&&calculateRoute(selectedFacility));
+$("analyse").addEventListener("click",()=>{
+  updateAccessAnalysis();
+  if(nearestFacility)calculateRoute(nearestFacility);
+});
+$("facilityType").addEventListener("change",()=>{
   renderFacilities();
-  renderEAs();
-  setRouteSummary("Choose a starting point and destination, then analyse access.");
-  setStatus("Controls reset. Loaded data has been retained.");
-  $("mapInstructions").textContent =
-    "Choose “Choose on map” for the start or destination, then click the map.";
-  map.setView(GAMBIA_CENTER, 8);
+  updateAccessAnalysis();
+});
+$("searchName").addEventListener("input",renderFacilities);
+$("listLimit").addEventListener("change",renderFacilityList);
+$("radius").addEventListener("change",updateAccessAnalysis);
+$("speed").addEventListener("change",updateAccessAnalysis);
+
+$("showFacilities").addEventListener("change",renderFacilities);
+$("showOrigin").addEventListener("change",updateOriginMarker);
+$("showRoutes").addEventListener("change",()=>{
+  if(routeLine){
+    if($("showRoutes").checked)routeLine.addTo(routeLayer);
+    else routeLayer.removeLayer(routeLine);
+  }
+});
+$("showRings").addEventListener("change",drawRings);
+
+function drawRings(){
+  ringLayer.clearLayers();
+  if(!origin||!$("showRings").checked)return;
+  const km=Number($("radius").value);
+  // Leaflet circles are a distance illustration only, not road-access isochrones.
+  [km].forEach((r,i)=>{
+    L.circle([origin.lat,origin.lon],{
+      radius:r*1000,color:"#2784bf",weight:2,fillColor:"#6bb6e7",
+      fillOpacity:.08,dashArray:"6 5"
+    }).bindPopup(`${r} km straight-line screening radius`).addTo(ringLayer);
+  });
 }
-function bindEvents() {
-  $("loadFacilitiesBtn").addEventListener("click", loadFacilities);
-  $("clearSearchBtn").addEventListener("click", () => {
-    $("facilitySearch").value = "";
-    renderFacilities();
-  });
-  $("facilityType").addEventListener("change", renderFacilities);
+const oldSetOrigin=setOrigin;
+setOrigin=function(lat,lon,name){
+  oldSetOrigin(lat,lon,name);
+  drawRings();
+};
 
-  // Filter marker display without reloading facility data.
-  let searchTimer;
-  $("facilitySearch").addEventListener("input", () => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(renderFacilities, 180);
-  });
+$("basemap").addEventListener("change",()=>{
+  Object.values(basemaps).forEach(layer=>map.removeLayer(layer));
+  basemaps[$("basemap").value].addTo(map);
+});
+$("gambiaView").addEventListener("click",()=>map.fitBounds(GAMBIA_BOUNDS,{padding:[15,15]}));
+$("fitAll").addEventListener("click",()=>{
+  const points=[];
+  if(origin)points.push([origin.lat,origin.lon]);
+  if(routeLine)points.push(...routeLine.getLatLngs().map(p=>[p.lat,p.lng]));
+  if(points.length)map.fitBounds(points,{padding:[30,30],maxZoom:13});
+  else if(facilityMarkers.length)map.fitBounds(L.featureGroup(facilityMarkers).getBounds(),{padding:[25,25]});
+  else map.fitBounds(GAMBIA_BOUNDS);
+});
 
-  $("startChoice").addEventListener("change", async () => {
-    if ($("startChoice").value === "gps") {
-      try { setStartPoint(await getGPS(), true); }
-      catch (err) { setStatus("GPS: " + err.message, "error"); }
-    } else if ($("startChoice").value === "facility" && $("startFacility").value) {
-      chooseFacilityAsStart($("startFacility").value);
-    } else if ($("startChoice").value === "map") beginMapPick("start");
-  });
-  $("destChoice").addEventListener("change", async () => {
-    if ($("destChoice").value === "gps") {
-      try { setDestinationPoint(await getGPS(), true); }
-      catch (err) { setStatus("GPS: " + err.message, "error"); }
-    } else if ($("destChoice").value === "facility" && $("destFacility").value) {
-      chooseFacilityAsDestination($("destFacility").value);
-    } else if ($("destChoice").value === "map") beginMapPick("destination");
-  });
-  $("startFacility").addEventListener("change", () => {
-    const f = findFacility($("startFacility").value);
-    if (f) setStartPoint(pointObject(f.lat, f.lon, f.name, "facility"), true);
-  });
-  $("destFacility").addEventListener("change", () => {
-    const f = findFacility($("destFacility").value);
-    if (f) setDestinationPoint(pointObject(f.lat, f.lon, f.name, "facility"), true);
-  });
-  $("gpsStartBtn").addEventListener("click", async () => {
-    try {
-      $("startChoice").value = "gps";
-      setStartPoint(await getGPS(), true);
-      setStatus("Current GPS location set as starting point.", "success");
-    } catch (err) { setStatus("GPS: " + err.message, "error"); }
-  });
-  $("gpsDestBtn").addEventListener("click", async () => {
-    try {
-      $("destChoice").value = "gps";
-      setDestinationPoint(await getGPS(), true);
-      setStatus("Current GPS location set as destination.", "success");
-    } catch (err) { setStatus("GPS: " + err.message, "error"); }
-  });
-  $("pickStartBtn").addEventListener("click", () => {
-    $("startChoice").value = "map";
-    beginMapPick("start");
-  });
-  $("pickDestBtn").addEventListener("click", () => {
-    $("destChoice").value = "map";
-    beginMapPick("destination");
-  });
-  $("analyseBtn").addEventListener("click", analyseAccess);
-  $("resetBtn").addEventListener("click", resetApp);
-  $("radius").addEventListener("change", updateRadiusCircle);
-  $("showFacilities").addEventListener("change", applyLayerVisibility);
-  $("showEA").addEventListener("change", applyLayerVisibility);
-  $("showRoute").addEventListener("change", applyLayerVisibility);
-  $("showRadius").addEventListener("change", applyLayerVisibility);
-  $("showStart").addEventListener("change", syncPointVisibility);
-  $("showDestination").addEventListener("change", syncPointVisibility);
-  $("basemap").addEventListener("change", e => setBasemap(e.target.value));
-  $("applyFiltersBtn").addEventListener("click", () => {
-    renderEAs();
-    renderFacilities();
-    updateRadiusCount();
-  });
-  ["lgaFilter", "districtFilter", "wardFilter", "populationField"].forEach(id => {
-    $(id).addEventListener("change", () => {
-      if (id === "lgaFilter") {
-        $("districtFilter").value = "";
-        $("wardFilter").value = "";
-      } else if (id === "districtFilter") {
-        $("wardFilter").value = "";
-      }
-      renderEAs();
-    });
-  });
-  $("fitResultsBtn").addEventListener("click", fitResults);
-  $("refreshMapBtn").addEventListener("click", () => {
-    map.invalidateSize();
-    renderFacilities();
-    renderEAs();
-    setStatus("Map refreshed.", "success");
-  });
-  $("exportFacilitiesBtn").addEventListener("click", exportFacilities);
-  $("exportAccessBtn").addEventListener("click", exportAccess);
-  $("exportEABtn").addEventListener("click", exportEAs);
-}
+$("clear").addEventListener("click",()=>{
+  routeRequestId++;
+  origin=null;selectedFacility=null;nearestFacility=null;routeDestination=null;
+  routeLayer.clearLayers();ringLayer.clearLayers();originLayer.clearLayers();
+  routeLine=null;originMarker=null;
+  $("originName").value="";
+  $("routeSummary").textContent="No route calculated yet.";
+  $("directions").innerHTML='<p class="note">Select a starting point and calculate a route.</p>';
+  $("nearestResult").textContent="Set a starting point, load facilities and run the analysis.";
+  $("kNearest").textContent="—";$("kTime").textContent="—";
+  updateOriginMarker();updateAccessAnalysis();
+  map.fitBounds(GAMBIA_BOUNDS,{padding:[15,15]});
+});
 
-bindEvents();
-renderFacilities();
-setStatus("Ready. Loading EA population polygons…");
-loadEAData();
-map.whenReady(() => setTimeout(() => map.invalidateSize(), 150));
+$("exportCSV").addEventListener("click",()=>{
+  if(!facilities.length){setStatus("loadStatus","Load facilities before exporting.","error");return;}
+  const headers=["id","name","type","latitude","longitude","straight_line_distance_km","operator","phone","website","osm_url"];
+  const rows=facilities.map(f=>[
+    f.id,f.name,f.type,f.lat,f.lon,
+    origin?haversine(origin,{lat:f.lat,lon:f.lon}).toFixed(3):"",
+    f.tags.operator||"",f.tags.phone||"",f.tags.website||"",
+    `https://www.openstreetmap.org/${f.id.replace("/","/")}`
+  ]);
+  const csv=[headers,...rows].map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="GBoS_GEOAI_Gambia_Healthcare_Facilities.csv";
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
 
+// Start with Gambia view; data are fetched only when the user asks.
+map.fitBounds(GAMBIA_BOUNDS,{padding:[15,15]});
+setStatus("loadStatus","Ready. Click “Load facilities” to retrieve mapped health facilities.");
 </script>
 </body>
 </html>
-
